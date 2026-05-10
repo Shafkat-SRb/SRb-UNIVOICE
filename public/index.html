@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>UniVoice | Gateway</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        .golden-frame {
+            max-width: 1400px;
+            width: 100%;
+            background: white;
+            border: 4px solid #d4af37;
+            border-radius: 50px;
+            padding: 40px 50px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        }
+        .logo-section { text-align: center; margin-bottom: 40px; }
+        .ku-logo { width: 300px; height: auto; display: block; margin: 0 auto 20px; }
+        .logo-section h1 { font-size: 2.8rem; font-weight: 800; background: linear-gradient(135deg, #1e5631 0%, #2ecc71 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .split-container { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 20px; }
+        .card { background: #fff; border-radius: 30px; padding: 30px; border: 2px solid #e9ecef; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .card:hover { transform: translateY(-5px); border-color: #d4af37; }
+        .card h2 { color: #1e5631; font-size: 1.8rem; margin-bottom: 5px; }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-weight: 600; color: #495057; margin-bottom: 8px; }
+        .input-group input { width: 100%; padding: 14px 18px; border: 2px solid #e9ecef; border-radius: 16px; font-family: 'Poppins', sans-serif; font-size: 1rem; }
+        .btn-primary { width: 100%; background: linear-gradient(135deg, #1e5631 0%, #27ae60 100%); color: white; border: none; padding: 14px; border-radius: 16px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.3s; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(30,86,49,0.3); }
+        .btn-outline-gold { background: transparent; border: 2px solid #d4af37; color: #d4af37; width: 100%; padding: 12px; border-radius: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+        .qr-scanner-area { margin-top: 20px; border-top: 1px solid #e9ecef; padding-top: 20px; }
+        #qr-reader { width: 100%; border-radius: 20px; overflow: hidden; margin-top: 10px; }
+        @media (max-width: 900px) { .split-container { grid-template-columns: 1fr; } .ku-logo { width: 200px; } }
+    </style>
+</head>
+<body>
+    <div class="golden-frame">
+        <div class="logo-section">
+            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/12/University_of_Kashmir_logo.png/200px-University_of_Kashmir_logo.png" class="ku-logo" onerror="this.src='https://placehold.co/300x100/1e5631/white?text=KU'">
+            <h1>UniVoice</h1>
+            <p>Elite Smart Interaction Platform</p>
+        </div>
+        <div class="split-container">
+            <div class="card">
+                <h2>🎤 Create Meet</h2>
+                <p class="card-sub">Start a new session as Coordinator</p>
+                <form id="createMeetForm">
+                    <div class="input-group"><label>Coordinator Name</label><input type="text" id="coordName" placeholder="Prof. John Doe" required></div>
+                    <div class="input-group"><label>Session Topic</label><input type="text" id="sessionTopic" placeholder="e.g., Artificial Intelligence" required></div>
+                    <button type="submit" class="btn-primary">✨ Create Session →</button>
+                </form>
+            </div>
+            <div class="card">
+                <h2>📱 Join Meet</h2>
+                <p class="card-sub">Enter Meet ID or scan QR Code</p>
+                <form id="joinMeetForm">
+                    <div class="input-group"><label>Meet ID</label><input type="text" id="meetIdInput" placeholder="e.g., A1B2C3" required></div>
+                    <div class="input-group"><label>Full Name</label><input type="text" id="studentName" placeholder="Your Name" required></div>
+                    <div class="input-group"><label>Department</label><input type="text" id="studentDept" placeholder="e.g., Computer Science" required></div>
+                    <div class="input-group"><label>Roll Number</label><input type="text" id="studentRoll" placeholder="2024-CS-01" required></div>
+                    <!-- Password field always visible (but optional) -->
+                    <div class="input-group"><label>Session Password (if required)</label><input type="password" id="sessionPassword" placeholder="Enter password"></div>
+                    <button type="submit" class="btn-primary">🚀 Join Session →</button>
+                </form>
+                <div class="qr-scanner-area">
+                    <button type="button" id="scanQrBtn" class="btn-outline-gold">📷 Scan QR Code</button>
+                    <div id="qr-reader" style="display:none;"></div>
+                    <div id="qr-result" class="scanned-id"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        document.getElementById('createMeetForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const coordinatorName = document.getElementById('coordName').value;
+            const sessionTopic = document.getElementById('sessionTopic').value;
+            if (!coordinatorName || !sessionTopic) return alert('Fill all fields');
+            socket.emit('create-room', { coordinatorName, sessionTopic });
+            const btn = e.target.querySelector('button');
+            btn.disabled = true; btn.textContent = 'Creating...';
+        });
+        socket.on('room-created', ({ meetId, sessionTopic }) => {
+            window.location.href = `/coordinator?meetId=${meetId}&topic=${encodeURIComponent(sessionTopic)}`;
+        });
+        document.getElementById('joinMeetForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const meetId = document.getElementById('meetIdInput').value.toUpperCase();
+            const name = document.getElementById('studentName').value;
+            const dept = document.getElementById('studentDept').value;
+            const roll = document.getElementById('studentRoll').value;
+            const password = document.getElementById('sessionPassword').value;
+            if (!meetId || !name || !dept || !roll) return alert('All fields required');
+            sessionStorage.setItem('joinMeetId', meetId);
+            sessionStorage.setItem('joinName', name);
+            sessionStorage.setItem('joinDept', dept);
+            sessionStorage.setItem('joinRoll', roll);
+            sessionStorage.setItem('joinPassword', password);
+            window.location.href = `/student?meetId=${meetId}`;
+        });
+        let html5QrCode;
+        const scanBtn = document.getElementById('scanQrBtn');
+        const qrReader = document.getElementById('qr-reader');
+        scanBtn.onclick = () => {
+            if (qrReader.style.display === 'none') {
+                qrReader.style.display = 'block';
+                scanBtn.textContent = '❌ Close Scanner';
+                html5QrCode = new Html5Qrcode("qr-reader");
+                html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, (decodedText) => {
+                    document.getElementById('meetIdInput').value = decodedText.toUpperCase();
+                    document.getElementById('qr-result').innerHTML = `✅ Scanned: ${decodedText}`;
+                    html5QrCode.stop();
+                    qrReader.style.display = 'none';
+                    scanBtn.textContent = '📷 Scan QR Code';
+                }, (error) => {});
+            } else {
+                if (html5QrCode) html5QrCode.stop();
+                qrReader.style.display = 'none';
+                scanBtn.textContent = '📷 Scan QR Code';
+            }
+        };
+    </script>
+</body>
+</html>
