@@ -1,130 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>UniVoice | Student Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f0f2f5 0%, #e9ecef 100%);
-            min-height: 100vh;
-            padding: 25px;
-        }
-        .golden-frame {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border: 4px solid #d4af37;
-            border-radius: 50px;
-            padding: 30px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
-        }
-        .ku-logo { width: 100px; display: block; margin: 0 auto 15px; }
-        h2 { color: #1e5631; text-align: center; margin-bottom: 10px; }
-        .session-info { text-align: center; background: #f8f9fa; padding: 12px; border-radius: 30px; margin: 15px 0; }
-        .action-buttons { display: flex; gap: 15px; margin: 20px 0; }
-        .btn-request { flex: 1; background: #e67e22; color: white; border: none; padding: 14px; border-radius: 30px; font-weight: 700; cursor: pointer; }
-        .btn-request:disabled { background: #bdc3c7; cursor: not-allowed; }
-        .message-area { display: flex; gap: 10px; margin-top: 15px; }
-        .message-area input { flex: 1; padding: 12px; border-radius: 30px; border: 2px solid #ddd; }
-        .message-area button { background: #3498db; color: white; border: none; padding: 0 20px; border-radius: 30px; font-weight: 600; cursor: pointer; }
-        .emoji-picker { display: flex; gap: 12px; justify-content: center; margin: 15px 0; }
-        .emoji-btn { font-size: 1.8rem; cursor: pointer; background: #f1f3f5; padding: 8px 12px; border-radius: 50px; transition: 0.2s; }
-        .status-card { background: #e8f5e9; padding: 15px; border-radius: 20px; text-align: center; margin: 15px 0; }
-        .timer-display { font-size: 1.5rem; font-weight: 800; color: #1e5631; }
-        .green-flash { animation: greenFlash 0.5s ease; }
-        @keyframes greenFlash { 0% { background-color: white; } 50% { background-color: #2ecc71; } 100% { background-color: white; } }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-content { background: white; border-radius: 40px; padding: 30px; width: 90%; max-width: 500px; text-align: center; }
-        .poll-option { display: block; width: 100%; margin: 10px 0; padding: 14px; border-radius: 30px; border: 2px solid #ddd; background: white; font-weight: 600; cursor: pointer; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>UniVoice | Student Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f0f2f5 0%, #e9ecef 100%);
+            min-height: 100vh;
+            padding: 25px;
+        }
+        .golden-frame {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border: 4px solid #d4af37;
+            border-radius: 50px;
+            padding: 30px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        }
+        .ku-logo { width: 100px; display: block; margin: 0 auto 15px; }
+        h2 { color: #1e5631; text-align: center; margin-bottom: 10px; }
+        .session-info { text-align: center; background: #f8f9fa; padding: 12px; border-radius: 30px; margin: 15px 0; }
+        .action-buttons { display: flex; gap: 15px; margin: 20px 0; }
+        .btn-request { flex: 1; background: #e67e22; color: white; border: none; padding: 14px; border-radius: 30px; font-weight: 700; cursor: pointer; }
+        .btn-request:disabled { background: #bdc3c7; cursor: not-allowed; }
+        .message-area { display: flex; gap: 10px; margin-top: 15px; }
+        .message-area input { flex: 1; padding: 12px; border-radius: 30px; border: 2px solid #ddd; }
+        .message-area button { background: #3498db; color: white; border: none; padding: 0 20px; border-radius: 30px; font-weight: 600; cursor: pointer; }
+        .emoji-picker { display: flex; gap: 12px; justify-content: center; margin: 15px 0; }
+        .emoji-btn { font-size: 1.8rem; cursor: pointer; background: #f1f3f5; padding: 8px 12px; border-radius: 50px; transition: 0.2s; }
+        .status-card { background: #e8f5e9; padding: 15px; border-radius: 20px; text-align: center; margin: 15px 0; }
+        .timer-display { font-size: 1.5rem; font-weight: 800; color: #1e5631; }
+        .green-flash { animation: greenFlash 0.5s ease; }
+        @keyframes greenFlash { 0% { background-color: white; } 50% { background-color: #2ecc71; } 100% { background-color: white; } }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: white; border-radius: 40px; padding: 30px; width: 90%; max-width: 500px; text-align: center; }
+        .poll-option { display: block; width: 100%; margin: 10px 0; padding: 14px; border-radius: 30px; border: 2px solid #ddd; background: white; font-weight: 600; cursor: pointer; }
+    </style>
 </head>
 <body>
-    <div class="golden-frame" id="mainUi">
-        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/12/University_of_Kashmir_logo.png/200px-University_of_Kashmir_logo.png" class="ku-logo" onerror="this.src='https://placehold.co/100x100/1e5631/white?text=KU'">
-        <h2>UniVoice Student</h2>
-        <div class="session-info" id="sessionTopicDisplay"></div>
-        <div class="status-card" id="speakerStatus"><div>🎤 Speaking Status</div><div id="speakerTimer" class="timer-display">Not speaking</div></div>
-        <div class="action-buttons"><button id="requestSpeakBtn" class="btn-request">🎙️ Request to Speak</button></div>
-        <div class="emoji-picker">
-            <span class="emoji-btn" data-emoji="❤️">❤️</span>
-            <span class="emoji-btn" data-emoji="👍">👍</span>
-            <span class="emoji-btn" data-emoji="😂">😂</span>
-            <span class="emoji-btn" data-emoji="🎉">🎉</span>
-            <span class="emoji-btn" data-emoji="🤔">🤔</span>
-        </div>
-        <div class="message-area">
-            <input type="text" id="textInput" placeholder="Type your question...">
-            <button id="sendTextBtn">Send</button>
-        </div>
-    </div>
-    <div id="pollModal" class="modal"><div class="modal-content"><h3 id="pollQuestion"></h3><div id="pollOptions"></div></div></div>
-    <div id="directModal" class="modal"><div class="modal-content"><h3 id="directQuestion"></h3><input type="text" id="directAnswerInput" placeholder="Your answer..." style="width:100%; padding:12px; margin:15px 0; border-radius:30px;"><button id="submitDirectBtn" class="btn-request">Submit Answer</button></div></div>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
+    <div class="golden-frame" id="mainUi">
+        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/12/University_of_Kashmir_logo.png/200px-University_of_Kashmir_logo.png" class="ku-logo" onerror="this.src='https://placehold.co/100x100/1e5631/white?text=KU'">
+        <h2>UniVoice Student</h2>
+        <div class="session-info" id="sessionTopicDisplay"></div>
+        <div class="status-card" id="speakerStatus"><div>🎤 Speaking Status</div><div id="speakerTimer" class="timer-display">Not speaking</div></div>
+        <div class="action-buttons"><button id="requestSpeakBtn" class="btn-request">🎙️ Request to Speak</button></div>
+        <div class="emoji-picker">
+            <span class="emoji-btn" data-emoji="❤️">❤️</span>
+            <span class="emoji-btn" data-emoji="👍">👍</span>
+            <span class="emoji-btn" data-emoji="😂">😂</span>
+            <span class="emoji-btn" data-emoji="🎉">🎉</span>
+            <span class="emoji-btn" data-emoji="🤔">🤔</span>
+        </div>
+        <div class="message-area">
+            <input type="text" id="textInput" placeholder="Type your question...">
+            <button id="sendTextBtn">Send</button>
+        </div>
+    </div>
+
+    <div id="pollModal" class="modal"><div class="modal-content"><h3 id="pollQuestion"></h3><div id="pollOptions"></div></div></div>
+    <div id="directModal" class="modal"><div class="modal-content"><h3 id="directQuestion"></h3><input type="text" id="directAnswerInput" placeholder="Your answer..." style="width:100%; padding:12px; margin:15px 0; border-radius:30px;"><button id="submitDirectBtn" class="btn-request">Submit Answer</button></div></div>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
         // --- WEBRTC AUDIO VARIABLES ---
         let peerConnection = null;
         let localStream = null;
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const meetId = urlParams.get('meetId');
-        if (!meetId) { alert('Invalid session'); window.location.href = '/'; }
-        const name = sessionStorage.getItem('joinName') || 'Student';
-        const dept = sessionStorage.getItem('joinDept') || 'General';
-        const roll = sessionStorage.getItem('joinRoll') || 'N/A';
-        const password = sessionStorage.getItem('joinPassword') || '';
-        const socket = io();
-        let allowVoiceGlobal = true, allowTextGlobal = true, currentSpeakerTimer = null;
-        socket.emit('join-room', { meetId, name, dept, roll, password });
-        socket.on('join-response', (response) => {
-            if (!response.success) { alert(response.message); window.location.href = '/'; }
-            else {
-                document.getElementById('sessionTopicDisplay').innerHTML = `📖 Session: ${response.sessionTopic}`;
-                allowTextGlobal = response.allowText; allowVoiceGlobal = response.allowVoice;
-                if (!allowTextGlobal) document.getElementById('textInput').disabled = true;
-                if (!allowVoiceGlobal) document.getElementById('requestSpeakBtn').disabled = true;
-            }
-        });
-        document.getElementById('requestSpeakBtn').onclick = () => {
-            if (!allowVoiceGlobal) { alert('Voice queries disabled'); return; }
-            socket.emit('raise-hand', { meetId, name, dept, roll });
-            document.getElementById('requestSpeakBtn').innerText = '⏳ Request Sent';
-            document.getElementById('requestSpeakBtn').disabled = true;
-            setTimeout(() => {
-                document.getElementById('requestSpeakBtn').innerText = '🎙️ Request to Speak';
-                document.getElementById('requestSpeakBtn').disabled = false;
-            }, 3000);
-        };
+        const urlParams = new URLSearchParams(window.location.search);
+        const meetId = urlParams.get('meetId');
+        if (!meetId) { alert('Invalid session'); window.location.href = '/'; }
+        const name = sessionStorage.getItem('joinName') || 'Student';
+        const dept = sessionStorage.getItem('joinDept') || 'General';
+        const roll = sessionStorage.getItem('joinRoll') || 'N/A';
+        const password = sessionStorage.getItem('joinPassword') || '';
+        const socket = io();
+        let allowVoiceGlobal = true, allowTextGlobal = true, currentSpeakerTimer = null;
+        
+        socket.emit('join-room', { meetId, name, dept, roll, password });
+        
+        socket.on('join-response', (response) => {
+            if (!response.success) { alert(response.message); window.location.href = '/'; }
+            else {
+                document.getElementById('sessionTopicDisplay').innerHTML = `📖 Session: ${response.sessionTopic}`;
+                allowTextGlobal = response.allowText; allowVoiceGlobal = response.allowVoice;
+                if (!allowTextGlobal) document.getElementById('textInput').disabled = true;
+                if (!allowVoiceGlobal) document.getElementById('requestSpeakBtn').disabled = true;
+            }
+        });
+        
+        document.getElementById('requestSpeakBtn').onclick = () => {
+            if (!allowVoiceGlobal) { alert('Voice queries disabled'); return; }
+            socket.emit('raise-hand', { meetId, name, dept, roll });
+            document.getElementById('requestSpeakBtn').innerText = '⏳ Request Sent';
+            document.getElementById('requestSpeakBtn').disabled = true;
+            setTimeout(() => {
+                document.getElementById('requestSpeakBtn').innerText = '🎙️ Request to Speak';
+                document.getElementById('requestSpeakBtn').disabled = false;
+            }, 3000);
+        };
 
         // --- UPDATED SPEAKER ALLOWED LOGIC WITH AUDIO CAPTURE ---
-        socket.on('speaker-allowed', async ({ name: speakerName }) => {
-            if (navigator.vibrate) navigator.vibrate(500);
-            document.body.classList.add('green-flash');
-            setTimeout(() => document.body.classList.remove('green-flash'), 500);
-            document.getElementById('speakerStatus').innerHTML = `<div>🎤 You are speaking (Mic Live)</div><div id="speakerTimer" class="timer-display">60s left</div>`;
-            startTimer(60);
+        socket.on('speaker-allowed', async ({ name: speakerName }) => {
+            if (navigator.vibrate) navigator.vibrate(500);
+            document.body.classList.add('green-flash');
+            setTimeout(() => document.body.classList.remove('green-flash'), 500);
+            document.getElementById('speakerStatus').innerHTML = `<div>🎤 You are speaking (Mic Live)</div><div id="speakerTimer" class="timer-display">60s left</div>`;
+            startTimer(60);
 
             // Audio Transmission Logic
             try {
-                localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+                // Better constraints for mobile microphone capture
+                localStream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }, 
+                    video: false 
+                });
                 
                 const iceConfiguration = {
                     iceServers: [
                         { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:stun1.l.google.com:19302' },
                         {
-                            urls: 'turn:YOUR_TURN_SERVER_URL:3478', // Replace when you have Metered details
-                            username: 'YOUR_TURN_USERNAME', // Replace
-                            credential: 'YOUR_TURN_PASSWORD' // Replace
+                            urls: 'turn:openrelay.metered.ca:80',
+                            username: 'openrelayproject',
+                            credential: 'openrelayproject'
+                        },
+                        {
+                            urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+                            username: 'openrelayproject',
+                            credential: 'openrelayproject'
+                        },
+                        {
+                            urls: 'turn:staticauth.openrelay.metered.ca:80',
+                            username: 'openrelayprojectsecret',
+                            credential: 'openrelayprojectsecret'
                         }
-                    ]
+                    ],
+                    iceCandidatePoolSize: 10 // Added to speed up mobile connections
                 };
 
                 peerConnection = new RTCPeerConnection(iceConfiguration);
+
+                // Log connection status for debugging
+                peerConnection.onconnectionstatechange = () => {
+                    console.log("WebRTC Connection State:", peerConnection.connectionState);
+                };
                 
-                localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+                localStream.getTracks().forEach(track => {
+                    track.enabled = true; 
+                    peerConnection.addTrack(track, localStream);
+                });
 
                 peerConnection.onicecandidate = (event) => {
                     if (event.candidate) {
@@ -136,34 +165,34 @@
                 await peerConnection.setLocalDescription(offer);
                 socket.emit('webrtc-offer', { meetId, targetId: 'coordinator', sdp: peerConnection.localDescription });
             } catch (err) {
-                alert("Microphone access denied! Please allow mic permissions in your browser.");
+                console.error("Mic Error:", err);
+                alert("Microphone access denied! Ensure you are using HTTPS on your mobile browser.");
             }
-        });
+        });
 
-        socket.on('speaker-rejected', ({ name }) => {
-            alert(`Your request to speak was declined by the coordinator.`);
-            document.getElementById('requestSpeakBtn').disabled = false;
-        });
+        socket.on('speaker-rejected', ({ name }) => {
+            alert(`Your request to speak was declined by the coordinator.`);
+            document.getElementById('requestSpeakBtn').disabled = false;
+        });
 
-        function startTimer(seconds) {
-            if (currentSpeakerTimer) clearInterval(currentSpeakerTimer);
-            let remaining = seconds;
-            const timerDiv = document.getElementById('speakerTimer');
-            currentSpeakerTimer = setInterval(() => {
-                remaining--;
-                if (timerDiv) timerDiv.innerText = `${remaining}s left`;
-                if (remaining <= 0) { clearInterval(currentSpeakerTimer); timerDiv.innerText = 'Time up'; }
-                if (remaining === 15) { if (navigator.vibrate) navigator.vibrate([200,100,200]); alert('⚠️ 15 seconds remaining!'); }
-            }, 1000);
-        }
+        function startTimer(seconds) {
+            if (currentSpeakerTimer) clearInterval(currentSpeakerTimer);
+            let remaining = seconds;
+            const timerDiv = document.getElementById('speakerTimer');
+            currentSpeakerTimer = setInterval(() => {
+                remaining--;
+                if (timerDiv) timerDiv.innerText = `${remaining}s left`;
+                if (remaining <= 0) { clearInterval(currentSpeakerTimer); timerDiv.innerText = 'Time up'; }
+                if (remaining === 15) { if (navigator.vibrate) navigator.vibrate([200,100,200]); alert('⚠️ 15 seconds remaining!'); }
+            }, 1000);
+        }
 
         // --- UPDATED SPEAKER REVOKED LOGIC WITH AUDIO CLEANUP ---
-        socket.on('speaker-revoked', () => {
-            if (currentSpeakerTimer) clearInterval(currentSpeakerTimer);
-            document.getElementById('speakerStatus').innerHTML = `<div>🎤 Speaking Status</div><div id="speakerTimer" class="timer-display">Not speaking</div>`;
-            document.getElementById('requestSpeakBtn').disabled = false;
+        socket.on('speaker-revoked', () => {
+            if (currentSpeakerTimer) clearInterval(currentSpeakerTimer);
+            document.getElementById('speakerStatus').innerHTML = `<div>🎤 Speaking Status</div><div id="speakerTimer" class="timer-display">Not speaking</div>`;
+            document.getElementById('requestSpeakBtn').disabled = false;
 
-            // Stop Microphone Recording
             if (localStream) {
                 localStream.getTracks().forEach(track => track.stop());
                 localStream = null;
@@ -172,7 +201,7 @@
                 peerConnection.close();
                 peerConnection = null;
             }
-        });
+        });
 
         // --- WEBRTC LISTENER LOGIC ---
         socket.on('webrtc-answer', async ({ sdp }) => {
@@ -183,45 +212,64 @@
             if (peerConnection) await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
         });
 
-        socket.on('time-warning', ({ remaining }) => { if (navigator.vibrate) navigator.vibrate(300); alert(`⚠️ ${Math.ceil(remaining)} seconds remaining!`); });
-        document.getElementById('sendTextBtn').onclick = () => {
-            const msg = document.getElementById('textInput').value;
-            if (!msg.trim()) return;
-            if (!allowTextGlobal) { alert('Text queries disabled'); return; }
-            socket.emit('student-message', { meetId, message: msg, name });
-            document.getElementById('textInput').value = '';
-        };
-        document.querySelectorAll('.emoji-btn').forEach(btn => { btn.onclick = () => { socket.emit('send-emoji', { meetId, emoji: btn.getAttribute('data-emoji') }); }; });
-        socket.on('poll-received', ({ type, question, options }) => {
-            const modal = document.getElementById('pollModal');
-            document.getElementById('pollQuestion').innerText = question;
-            const optsDiv = document.getElementById('pollOptions');
-            optsDiv.innerHTML = options.map(opt => `<button class="poll-option" data-answer="${opt}">${opt}</button>`).join('');
-            modal.style.display = 'flex';
-            document.querySelectorAll('.poll-option').forEach(btn => { btn.onclick = () => { socket.emit('submit-poll-response', { meetId, answer: btn.innerText, name }); modal.style.display = 'none'; alert('Response submitted!'); }; });
-        });
-        socket.on('direct-prompt-received', ({ question, promptId }) => {
-            const modal = document.getElementById('directModal');
-            document.getElementById('directQuestion').innerText = question;
-            modal.style.display = 'flex';
-            window.currentPromptId = promptId;
-        });
-        document.getElementById('submitDirectBtn').onclick = () => {
-            const answer = document.getElementById('directAnswerInput').value;
-            if (!answer.trim()) return;
-            socket.emit('submit-direct-answer', { meetId, answer, name, promptId: window.currentPromptId });
-            document.getElementById('directModal').style.display = 'none';
-            document.getElementById('directAnswerInput').value = '';
-            alert('Answer sent to coordinator');
-        };
-        socket.on('session-ended', () => { alert('Session ended by coordinator.'); window.location.href = '/'; });
-        socket.on('settings-updated', ({ allowText, allowVoice }) => {
-            allowTextGlobal = allowText; allowVoiceGlobal = allowVoice;
-            document.getElementById('textInput').disabled = !allowText;
-            document.getElementById('requestSpeakBtn').disabled = !allowVoice;
-            if (!allowVoice && currentSpeakerTimer) { clearInterval(currentSpeakerTimer); document.getElementById('speakerStatus').innerHTML = `<div>🎤 Speaking Status</div><div id="speakerTimer" class="timer-display">Not speaking</div>`; }
-        });
-        window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
-    </script>
+        socket.on('time-warning', ({ remaining }) => { if (navigator.vibrate) navigator.vibrate(300); alert(`⚠️ ${Math.ceil(remaining)} seconds remaining!`); });
+        
+        document.getElementById('sendTextBtn').onclick = () => {
+            const msg = document.getElementById('textInput').value;
+            if (!msg.trim()) return;
+            if (!allowTextGlobal) { alert('Text queries disabled'); return; }
+            socket.emit('student-message', { meetId, message: msg, name });
+            document.getElementById('textInput').value = '';
+        };
+        
+        document.querySelectorAll('.emoji-btn').forEach(btn => { 
+            btn.onclick = () => { socket.emit('send-emoji', { meetId, emoji: btn.getAttribute('data-emoji') }); }; 
+        });
+        
+        socket.on('poll-received', ({ type, question, options }) => {
+            const modal = document.getElementById('pollModal');
+            document.getElementById('pollQuestion').innerText = question;
+            const optsDiv = document.getElementById('pollOptions');
+            optsDiv.innerHTML = options.map(opt => `<button class="poll-option" data-answer="${opt}">${opt}</button>`).join('');
+            modal.style.display = 'flex';
+            document.querySelectorAll('.poll-option').forEach(btn => { 
+                btn.onclick = () => { 
+                    socket.emit('submit-poll-response', { meetId, answer: btn.innerText, name }); 
+                    modal.style.display = 'none'; 
+                    alert('Response submitted!'); 
+                }; 
+            });
+        });
+        
+        socket.on('direct-prompt-received', ({ question, promptId }) => {
+            const modal = document.getElementById('directModal');
+            document.getElementById('directQuestion').innerText = question;
+            modal.style.display = 'flex';
+            window.currentPromptId = promptId;
+        });
+        
+        document.getElementById('submitDirectBtn').onclick = () => {
+            const answer = document.getElementById('directAnswerInput').value;
+            if (!answer.trim()) return;
+            socket.emit('submit-direct-answer', { meetId, answer, name, promptId: window.currentPromptId });
+            document.getElementById('directModal').style.display = 'none';
+            document.getElementById('directAnswerInput').value = '';
+            alert('Answer sent to coordinator');
+        };
+        
+        socket.on('session-ended', () => { alert('Session ended by coordinator.'); window.location.href = '/'; });
+        
+        socket.on('settings-updated', ({ allowText, allowVoice }) => {
+            allowTextGlobal = allowText; allowVoiceGlobal = allowVoice;
+            document.getElementById('textInput').disabled = !allowText;
+            document.getElementById('requestSpeakBtn').disabled = !allowVoice;
+            if (!allowVoice && currentSpeakerTimer) { 
+                clearInterval(currentSpeakerTimer); 
+                document.getElementById('speakerStatus').innerHTML = `<div>🎤 Speaking Status</div><div id="speakerTimer" class="timer-display">Not speaking</div>`; 
+            }
+        });
+        
+        window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
+    </script>
 </body>
 </html>

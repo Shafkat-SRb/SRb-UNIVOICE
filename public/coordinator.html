@@ -313,10 +313,21 @@
         const iceConfiguration = {
             iceServers: [
                 { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' },
                 {
-                    urls: 'turn:YOUR_TURN_SERVER_URL:3478', // Replace when you have Metered details
-                    username: 'YOUR_TURN_USERNAME', // Replace
-                    credential: 'YOUR_TURN_PASSWORD' // Replace
+                    urls: 'turn:openrelay.metered.ca:80',
+                    username: 'openrelayproject',
+                    credential: 'openrelayproject'
+                },
+                {
+                    urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+                    username: 'openrelayproject',
+                    credential: 'openrelayproject'
+                },
+                {
+                    urls: 'turn:staticauth.openrelay.metered.ca:80',
+                    username: 'openrelayprojectsecret',
+                    credential: 'openrelayprojectsecret'
                 }
             ]
         };
@@ -330,16 +341,25 @@
             }
         };
 
-        // When audio arrives, create an invisible audio element and play it
+        // UPDATED AUDIO HANDLING LOGIC
         pc.ontrack = (event) => {
+            console.log("🎤 Audio stream incoming from student:", senderId);
             let audioElement = document.getElementById(`audio-${senderId}`);
             if (!audioElement) {
                 audioElement = document.createElement('audio');
                 audioElement.id = `audio-${senderId}`;
                 audioElement.autoplay = true; 
+                // Add these for extra browser compatibility
+                audioElement.setAttribute('autoplay', 'true');
+                audioElement.setAttribute('playsinline', 'true');
                 document.body.appendChild(audioElement);
             }
             audioElement.srcObject = event.streams[0];
+            
+            // EXPLICIT PLAY CALL: Forces the browser to ignore its "silence" policy
+            audioElement.play().catch(e => {
+                console.warn("Autoplay blocked. User needs to click the page first.", e);
+            });
         };
 
         await pc.setRemoteDescription(new RTCSessionDescription(sdp));
