@@ -14,7 +14,7 @@ if (GROQ_API_KEY && GROQ_API_KEY.startsWith('gsk_')) {
     try {
         groq = new Groq({ apiKey: GROQ_API_KEY });
         groqEnabled = true;
-        console.log("✅ Groq AI enabled (Llama 3 70B).");
+        console.log("✅ UniVoice AI enabled (Powered by SRb).");
     } catch(e) { console.log("⚠️ Groq init failed:", e.message); }
 } else {
     console.log("⚠️ Invalid or missing GROQ_API_KEY. Using fallback AI.");
@@ -83,30 +83,19 @@ function localAI(question, topic) {
         if (q.includes(key)) return val;
     }
 
-    // Greetings
-    if (q.match(/^(hi|hello|hey|greetings)/i)) return `Hello! Welcome to the session on "${safeTopic}". How can I help you today?`;
-    if (q.includes("how are you")) return `I'm ready to assist with "${safeTopic}". Ask me anything!`;
-    if (q.includes("thank")) return `You're welcome! If you have more questions about "${safeTopic}", feel free to ask.`;
+    if (q.match(/^(hi|hello|hey|greetings)/i)) return `Hello! Welcome to UniVoice, crafted for voice that matters. How can I help you today?`;
+    if (q.includes("how are you")) return `I'm your UniVoice AI assistant, powered by SRb, ready to assist with anything!`;
+    if (q.includes("thank")) return `You're welcome! I'm here to help.`;
 
-    // Topic‑aware answers
     const mainTopic = safeTopic.split(' ')[0];
     if (q.match(/^(what is|define|explain|tell me about)/i)) {
-        return `Great question about "${safeTopic}". ${safeTopic} refers to the study and application of ${mainTopic} principles. Would you like a specific example?`;
-    }
-    if (q.match(/^(how to|how do|steps|process)/i)) {
-        return `To apply ${mainTopic}, consider: 1) Learn basics, 2) Practice with examples, 3) Discuss with peers. We'll cover step‑by‑step methods.`;
-    }
-    if (q.match(/^why/i)) {
-        return `That's an insightful question. ${mainTopic} matters because it shapes modern approaches. We'll explore evidence during the session.`;
-    }
-    if (q.includes("difference between") || q.includes("vs")) {
-        return `Both relate to ${safeTopic}, but their application and context differ. Would you like a more specific comparison?`;
+        return `Regarding your query about "${question}", in the context of ${safeTopic}, it generally refers to fundamental principles. Would you like a detailed explanation?`;
     }
 
-    return `That's a good question about "${safeTopic}". I suggest we explore it together or ask the coordinator for more details.`;
+    return `That's an interesting question. I'm an independent AI assistant powered by SRb. Could you provide more details so I can give you a perfect answer?`;
 }
 
-// ---------- AI with fallback (Groq -> local) ----------
+// ---------- AI with fallback (Groq -> independent) ----------
 async function getAIAnswer(question, topic) {
     if (groqEnabled && groq) {
         try {
@@ -115,12 +104,19 @@ async function getAIAnswer(question, topic) {
             const timeout = setTimeout(() => controller.abort(), 10000);
             const chatCompletion = await groq.chat.completions.create({
                 messages: [
-                    { role: "system", content: `You are a helpful AI assistant for a university session. The session topic is "${topic || 'general discussion'}". Answer the student's question naturally, concisely, and accurately. If it's math, compute it. Keep the answer friendly and educational.` },
+                    { 
+                        role: "system", 
+                        content: `You are UniVoice AI, a powerful and independent assistant powered by SRb. 
+                        DO NOT limit yourself to the session topic. Help the coordinator or student with ANY condition, logic, coding, or math. 
+                        The current session topic is "${topic}", use this only for context if relevant. 
+                        Always remember our motto: "Crafted for voice that matters". 
+                        Be concise, elite, and professional.` 
+                    },
                     { role: "user", content: question }
                 ],
                 model: "llama-3.3-70b-versatile",
                 temperature: 0.7,
-                max_tokens: 500
+                max_tokens: 1500 // Increased tokens for longer AI answers (handled by 'read more' on client)
             }, { signal: controller.signal });
             clearTimeout(timeout);
             return chatCompletion.choices[0]?.message?.content || localAI(question, topic);
@@ -151,25 +147,28 @@ app.get('/coordinator', (req, res) => res.sendFile(path.join(__dirname, 'public'
 app.get('/student', (req, res) => res.sendFile(path.join(__dirname, 'public', 'student.html')));
 
 io.on('connection', (socket) => {
-    console.log('📡 New client:', socket.id);
+    console.log('📡 New client node connected:', socket.id);
 
     socket.on('create-room', ({ coordinatorName, sessionTopic }) => {
         const meetId = generateMeetId();
         const room = {
             meetId, topic: sessionTopic, coordinatorName, coordinatorId: null,
             isActive: true, passwordEnabled: false, password: '',
-            allowText: true, allowVoice: true, debateMode: false, maxSpeakers: 1,
-            students: new Map(), handRaiseQueue: [], activeSpeakers: [], textMessages: []
+            allowText: true, allowVoice: true, debateMode: false, 
+            micTimer: 60, // Default 1 min
+            maxSpeakers: 1, // Default 1 speaker
+            students: new Map(), handRaiseQueue: [], activeSpeakers: [], textMessages: [],
+            pollVotes: { yes: 0, no: 0, voters: new Set() } // Added for WhatsApp-style tracking
         };
         activeRooms.set(meetId, room);
         socket.emit('room-created', { meetId, sessionTopic });
-        console.log(`✅ Room created: ${meetId} by ${coordinatorName}`);
+        console.log(`✅ Hub initialized: ${meetId} by ${coordinatorName} (SRb Network)`);
     });
 
     socket.on('join-coordinator', ({ meetId }) => {
         const room = activeRooms.get(meetId);
         if (!room || !room.isActive) {
-            socket.emit('join-error', { message: 'Room not found or ended' });
+            socket.emit('join-error', { message: 'Session hub not found or ended' });
             return;
         }
         room.coordinatorId = socket.id;
@@ -178,13 +177,16 @@ io.on('connection', (socket) => {
             sessionTopic: room.topic,
             allowText: room.allowText,
             allowVoice: room.allowVoice,
+            micTimer: room.micTimer,
             passwordGateEnabled: room.passwordEnabled,
             debateMode: room.debateMode,
             handRaiseQueue: room.handRaiseQueue,
             activeSpeakers: room.activeSpeakers.map(s => ({ socketId: s.socketId, name: s.name, dept: s.dept })),
             textMessages: room.textMessages.slice(-50)
         });
-        console.log(`🎮 Coordinator joined room: ${meetId}`);
+        console.log(`🎮 Coordinator joined SRb Hub: ${meetId}`);
+        // Broadcast participant count to everyone in Hub
+        io.to(meetId).emit('update-participant-count', { count: room.students.size });
     });
 
     socket.on('join-room', ({ meetId, name, dept, roll, password }) => {
@@ -194,7 +196,7 @@ io.on('connection', (socket) => {
             return;
         }
         if (room.passwordEnabled && password !== room.password) {
-            socket.emit('join-response', { success: false, message: 'Wrong password' });
+            socket.emit('join-response', { success: false, message: 'Wrong Hub Access Key' });
             return;
         }
         room.students.set(socket.id, { name, dept, roll });
@@ -205,15 +207,19 @@ io.on('connection', (socket) => {
             allowText: room.allowText,
             allowVoice: room.allowVoice
         });
-        console.log(`👨‍🎓 Student joined: ${name} (${meetId})`);
+        // Update live count for all users
+        io.to(meetId).emit('update-participant-count', { count: room.students.size });
     });
 
-    socket.on('raise-hand', ({ meetId, name, dept }) => {
+    socket.on('raise-hand', ({ meetId, name, dept, roll }) => {
         const room = activeRooms.get(meetId);
         if (!room || !room.allowVoice) return;
         if (room.handRaiseQueue.some(s => s.socketId === socket.id) || room.activeSpeakers.some(s => s.socketId === socket.id)) return;
-        room.handRaiseQueue.push({ socketId: socket.id, name, dept });
+        
+        // Push full state object cleanly
+        room.handRaiseQueue.push({ socketId: socket.id, name, dept, roll });
         io.to(meetId).emit('update-hand-raise-queue', room.handRaiseQueue);
+        console.log(`✋ Hand-raise logged cleanly for ${name} inside Hub ID: ${meetId}`);
     });
 
     socket.on('allow-speaker', ({ meetId, studentSocketId }) => {
@@ -222,15 +228,25 @@ io.on('connection', (socket) => {
         const index = room.handRaiseQueue.findIndex(s => s.socketId === studentSocketId);
         if (index === -1) return;
         const student = room.handRaiseQueue[index];
-        if (room.activeSpeakers.length >= room.maxSpeakers) {
-            socket.emit('speaker-slot-full', { message: 'Max speakers reached' });
+        
+        if (room.activeSpeakers.length >= room.maxSpeakers && room.maxSpeakers !== 0) {
+            socket.emit('speaker-slot-full', { message: 'Maximum speaker limit reached' });
             return;
         }
+
         room.handRaiseQueue.splice(index, 1);
         const startTime = Date.now();
+        const duration = room.micTimer; // Dynamic from settings
+
         const timerInterval = setInterval(() => {
+            if (duration === 0) { // Infinite mode
+                io.to(meetId).emit('speaker-timer-update', { socketId: studentSocketId, remaining: -1 });
+                return;
+            }
+
             const elapsed = (Date.now() - startTime) / 1000;
-            const remaining = Math.max(0, 60 - elapsed);
+            const remaining = Math.max(0, duration - elapsed);
+            
             if (remaining <= 0) {
                 clearInterval(timerInterval);
                 const spIndex = room.activeSpeakers.findIndex(s => s.socketId === studentSocketId);
@@ -241,13 +257,16 @@ io.on('connection', (socket) => {
                 }
             } else {
                 io.to(meetId).emit('speaker-timer-update', { socketId: studentSocketId, remaining });
-                if (remaining <= 15) io.to(studentSocketId).emit('time-warning', { remaining });
+                if (Math.floor(remaining) === 15) {
+                    io.to(studentSocketId).emit('time-warning', { remaining: 15 });
+                }
             }
         }, 1000);
+
         room.activeSpeakers.push({ socketId: student.socketId, name: student.name, dept: student.dept, timerInterval });
         io.to(meetId).emit('active-speakers-update', room.activeSpeakers.map(s => ({ socketId: s.socketId, name: s.name, dept: s.dept })));
         io.to(meetId).emit('update-hand-raise-queue', room.handRaiseQueue);
-        io.to(studentSocketId).emit('speaker-allowed', { name: student.name });
+        io.to(studentSocketId).emit('speaker-allowed', { name: student.name, duration });
     });
 
     socket.on('reject-speaker', ({ meetId, studentSocketId }) => {
@@ -259,7 +278,6 @@ io.on('connection', (socket) => {
         room.handRaiseQueue.splice(index, 1);
         io.to(meetId).emit('update-hand-raise-queue', room.handRaiseQueue);
         io.to(studentSocketId).emit('speaker-rejected', { name: student.name });
-        console.log(`❌ Speaker rejected: ${student.name} in ${meetId}`);
     });
 
     socket.on('remove-speaker', ({ meetId, studentSocketId }) => {
@@ -281,32 +299,39 @@ io.on('connection', (socket) => {
         const msg = { id: Date.now(), name, message, aiAnswer: AIanswer, timestamp: new Date().toLocaleTimeString() };
         room.textMessages.push(msg);
         io.to(meetId).emit('new-text-message', msg);
-        console.log(`💬 ${name}: "${message}" -> AI: ${AIanswer.substring(0, 100)}`);
     });
 
     socket.on('update-settings', ({ meetId, settings }) => {
         const room = activeRooms.get(meetId);
         if (!room) return;
+        
         if (settings.allowText !== undefined) room.allowText = settings.allowText;
         if (settings.allowVoice !== undefined) room.allowVoice = settings.allowVoice;
+        if (settings.micTimer !== undefined) room.micTimer = settings.micTimer;
+        if (settings.maxSpeakers !== undefined) room.maxSpeakers = settings.maxSpeakers;
         if (settings.passwordGateEnabled !== undefined) room.passwordEnabled = settings.passwordGateEnabled;
         if (settings.roomPassword !== undefined) room.password = settings.roomPassword;
+        
         if (settings.debateMode !== undefined) {
             room.debateMode = settings.debateMode;
-            room.maxSpeakers = settings.debateMode ? 4 : 1;
-            while (room.activeSpeakers.length > room.maxSpeakers) {
-                const extra = room.activeSpeakers.pop();
-                clearInterval(extra.timerInterval);
-                io.to(extra.socketId).emit('speaker-revoked');
-            }
-            io.to(meetId).emit('active-speakers-update', room.activeSpeakers.map(s => ({ socketId: s.socketId, name: s.name, dept: s.dept })));
-            io.to(meetId).emit('debate-mode-changed', { debateMode: room.debateMode, maxSpeakers: room.maxSpeakers });
+            if(!settings.maxSpeakers) room.maxSpeakers = settings.debateMode ? 5 : 1;
         }
-        io.to(meetId).emit('settings-updated', { allowText: room.allowText, allowVoice: room.allowVoice, passwordGateEnabled: room.passwordEnabled });
+
+        io.to(meetId).emit('settings-updated', { 
+            allowText: room.allowText, 
+            allowVoice: room.allowVoice, 
+            micTimer: room.micTimer,
+            maxSpeakers: room.maxSpeakers,
+            passwordGateEnabled: room.passwordEnabled 
+        });
     });
 
     socket.on('send-yesno-poll', ({ meetId, question }) => {
-        io.to(meetId).emit('poll-received', { type: 'yesno', question, options: ['Yes', 'No'] });
+        const room = activeRooms.get(meetId);
+        if (room) {
+            room.pollVotes = { yes: 0, no: 0, voters: new Set() }; // Reset for new poll
+            io.to(meetId).emit('poll-received', { type: 'yesno', question, options: ['Yes', 'No'] });
+        }
     });
 
     socket.on('send-direct-prompt', ({ meetId, question }) => {
@@ -314,11 +339,31 @@ io.on('connection', (socket) => {
     });
 
     socket.on('submit-poll-response', ({ meetId, answer, name }) => {
-        io.to(meetId).emit('poll-response-received', { name, answer });
+        const room = activeRooms.get(meetId);
+        if (!room || room.pollVotes.voters.has(socket.id)) return;
+
+        room.pollVotes.voters.add(socket.id);
+        if (answer.toLowerCase() === 'yes') room.pollVotes.yes++;
+        else if (answer.toLowerCase() === 'no') room.pollVotes.no++;
+
+        // Broadcast WhatsApp style real-time update
+        io.to(meetId).emit('poll-update-results', {
+            yes: room.pollVotes.yes,
+            no: room.pollVotes.no,
+            total: room.pollVotes.voters.size
+        });
+
+        // Still send the notification to the coordinator intelligence feed
+        if (room.coordinatorId) {
+            io.to(room.coordinatorId).emit('poll-response-received', { name, answer });
+        }
     });
 
     socket.on('submit-direct-answer', ({ meetId, answer, name }) => {
-        io.to(meetId).emit('direct-answer-response', { name, answer });
+        const room = activeRooms.get(meetId);
+        if (room && room.coordinatorId) {
+            io.to(room.coordinatorId).emit('direct-answer-response', { name, answer });
+        }
     });
 
     socket.on('send-emoji', ({ meetId, emoji }) => {
@@ -332,44 +377,40 @@ io.on('connection', (socket) => {
             room.isActive = false;
             io.to(meetId).emit('session-ended');
             activeRooms.delete(meetId);
-            console.log(`🔚 Session ended: ${meetId}`);
+            console.log(`🔚 Hub Terminated: ${meetId} by SRb Hub`);
         }
     });
 
-    // ---------- WEBRTC LIVE AUDIO SIGNALING ----------
     socket.on('webrtc-offer', ({ meetId, targetId, sdp }) => {
         const room = activeRooms.get(meetId);
         if (room && room.coordinatorId) {
-            // Route the student's audio offer ONLY to the coordinator
             io.to(room.coordinatorId).emit('webrtc-offer', { senderId: socket.id, sdp });
         }
     });
 
     socket.on('webrtc-answer', ({ targetId, sdp }) => {
-        // Route the coordinator's acceptance back to the specific student
         io.to(targetId).emit('webrtc-answer', { sdp });
     });
 
     socket.on('webrtc-ice', ({ meetId, targetId, candidate }) => {
-        // EXCHANGE NETWORK INFO FIX
         let actualTarget = targetId;
-        
-        // If student sends to "coordinator", find actual coordinator socket ID
         if (targetId === 'coordinator' && meetId) {
             const room = activeRooms.get(meetId);
-            if (room && room.coordinatorId) {
-                actualTarget = room.coordinatorId;
-            }
+            if (room && room.coordinatorId) actualTarget = room.coordinatorId;
         }
-        
         if (actualTarget) {
             io.to(actualTarget).emit('webrtc-ice', { senderId: socket.id, candidate });
         }
     });
 
     socket.on('disconnect', () => {
-        console.log('🔌 Disconnected:', socket.id);
         for (const [meetId, room] of activeRooms.entries()) {
+            if (room.students.has(socket.id)) {
+                room.students.delete(socket.id);
+                // Broadcast updated count on exit
+                io.to(meetId).emit('update-participant-count', { count: room.students.size });
+            }
+
             room.handRaiseQueue = room.handRaiseQueue.filter(s => s.socketId !== socket.id);
             io.to(meetId).emit('update-hand-raise-queue', room.handRaiseQueue);
             const speaker = room.activeSpeakers.find(s => s.socketId === socket.id);
@@ -383,15 +424,13 @@ io.on('connection', (socket) => {
                 room.isActive = false;
                 io.to(meetId).emit('session-ended');
                 activeRooms.delete(meetId);
-                console.log(`🗑️ Room deleted (coordinator left): ${meetId}`);
             }
-            if (room.students.has(socket.id)) room.students.delete(socket.id);
         }
     });
 });
 
 const PORT = 3000;
 server.listen(PORT, () => {
-    console.log(`\n🚀 UniVoice server running at http://localhost:${PORT}`);
+    console.log(`\n🚀 UniVoice Hub running by SRb at http://localhost:${PORT}`);
     console.log(`📱 Open this URL in your browser\n`);
 });

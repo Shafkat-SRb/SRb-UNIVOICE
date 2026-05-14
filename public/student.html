@@ -3,162 +3,292 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>UniVoice | Student Portal</title>
+    <title>UniVoice | Audience Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f0f2f5 0%, #e9ecef 100%);
+            background: radial-gradient(circle at bottom left, #1e293b, #0f172a);
+            color: #f8fafc;
             min-height: 100vh;
-            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
         }
+
+        /* --- Elite UniVoice Branding & Info --- */
+        .brand-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+        }
+        .custom-logo-mini {
+            position: relative; width: 70px; height: 65px; margin-bottom: 8px;
+            filter: drop-shadow(0 0 10px rgba(34, 197, 94, 0.3));
+        }
+        .logo-shape-1 {
+            position: absolute; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            animation: morph 8s ease-in-out infinite alternate;
+        }
+        .logo-shape-2 {
+            position: absolute; top: 15%; left: 15%; width: 70%; height: 70%;
+            background: #d4af37; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 1.4rem;
+        }
+        .tagline-top {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+        h2 { color: #fff; font-weight: 800; font-size: 2rem; letter-spacing: -0.5px; margin-bottom: 10px; }
+
+        /* Hotstar Style Counter */
+        .live-counter-audience {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(15, 23, 42, 0.8); padding: 6px 16px;
+            border-radius: 20px; border: 1px solid rgba(239, 68, 68, 0.4);
+            margin-top: 15px;
+        }
+        .live-dot { width: 8px; height: 8px; background: #ef4444; border-radius: 50%; animation: pulse-red 1.5s infinite; box-shadow: 0 0 10px #ef4444; }
+        .live-count-text { font-size: 0.8rem; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
+
+        .hub-id-display {
+            font-size: 0.85rem; color: #d4af37; font-weight: 700; margin-top: 10px;
+            letter-spacing: 1.5px; background: rgba(212, 175, 55, 0.1);
+            padding: 5px 18px; border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        /* --- Main Interaction Frame --- */
         .golden-frame {
-            max-width: 800px;
+            max-width: 600px;
             margin: 0 auto;
-            background: white;
-            border: 4px solid #d4af37;
-            border-radius: 50px;
-            padding: 30px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            width: 100%;
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 45px;
+            padding: 35px;
+            box-shadow: 0 30px 60px -12px rgba(0,0,0,0.6);
         }
-        .ku-logo { width: 100px; display: block; margin: 0 auto 15px; }
-        h2 { color: #1e5631; text-align: center; margin-bottom: 10px; }
-        .session-info { text-align: center; background: #f8f9fa; padding: 12px; border-radius: 30px; margin: 15px 0; }
-        .action-buttons { display: flex; gap: 15px; margin: 20px 0; }
-        .btn-request { flex: 1; background: #e67e22; color: white; border: none; padding: 14px; border-radius: 30px; font-weight: 700; cursor: pointer; }
-        .btn-request:disabled { background: #bdc3c7; cursor: not-allowed; }
-        .message-area { display: flex; gap: 10px; margin-top: 15px; }
-        .message-area input { flex: 1; padding: 12px; border-radius: 30px; border: 2px solid #ddd; }
-        .message-area button { background: #3498db; color: white; border: none; padding: 0 20px; border-radius: 30px; font-weight: 600; cursor: pointer; }
-        .emoji-picker { display: flex; gap: 12px; justify-content: center; margin: 15px 0; }
-        .emoji-btn { font-size: 1.8rem; cursor: pointer; background: #f1f3f5; padding: 8px 12px; border-radius: 50px; transition: 0.2s; }
-        .status-card { background: #e8f5e9; padding: 15px; border-radius: 20px; text-align: center; margin: 15px 0; }
-        .timer-display { font-size: 1.5rem; font-weight: 800; color: #1e5631; }
-        .green-flash { animation: greenFlash 0.5s ease; }
-        @keyframes greenFlash { 0% { background-color: white; } 50% { background-color: #2ecc71; } 100% { background-color: white; } }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-content { background: white; border-radius: 40px; padding: 30px; width: 90%; max-width: 500px; text-align: center; }
-        .poll-option { display: block; width: 100%; margin: 10px 0; padding: 14px; border-radius: 30px; border: 2px solid #ddd; background: white; font-weight: 600; cursor: pointer; }
+
+        .session-info { 
+            text-align: center; background: rgba(15, 23, 42, 0.6); 
+            padding: 14px; border-radius: 22px; margin-bottom: 20px; 
+            font-size: 0.95rem; color: #d4af37; font-weight: 600; border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .status-card { 
+            background: rgba(34, 197, 94, 0.08); border: 1px solid rgba(34, 197, 94, 0.2);
+            padding: 22px; border-radius: 28px; text-align: center; margin-bottom: 20px; 
+        }
+        .timer-display { font-size: 2rem; font-weight: 800; color: #22c55e; margin-top: 5px; text-shadow: 0 0 15px rgba(34, 197, 94, 0.3); }
+        .timer-display.critical { color: #ef4444; animation: pulse 1s infinite; }
+
+        .btn-request { 
+            width: 100%; background: linear-gradient(135deg, #e67e22 0%, #d35400 100%); 
+            color: white; border: none; padding: 20px; border-radius: 28px; 
+            font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.3s;
+            box-shadow: 0 12px 25px rgba(211, 84, 0, 0.3);
+        }
+        .btn-request:hover { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(211, 84, 0, 0.4); }
+        .btn-request:active { transform: scale(0.98); }
+        .btn-request:disabled { background: #475569; box-shadow: none; opacity: 0.6; cursor: not-allowed; }
+
+        .emoji-picker { display: flex; gap: 12px; justify-content: center; margin: 25px 0; }
+        .emoji-btn { 
+            font-size: 1.8rem; cursor: pointer; background: rgba(255,255,255,0.05); 
+            padding: 12px 18px; border-radius: 22px; transition: 0.2s; border: 1px solid rgba(255,255,255,0.08);
+        }
+        .emoji-btn:hover { background: rgba(255,255,255,0.1); transform: scale(1.1); }
+
+        .message-area { display: flex; gap: 12px; margin-top: 15px; }
+        .message-area input { 
+            flex: 1; padding: 18px 25px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); 
+            background: rgba(15, 23, 42, 0.7); color: white; outline: none; font-size: 1rem;
+        }
+        .message-area button { 
+            background: #3498db; color: white; border: none; padding: 0 30px; 
+            border-radius: 25px; font-weight: 700; cursor: pointer; transition: 0.2s;
+        }
+        .message-area button:hover { background: #2980b9; }
+
+        /* --- WhatsApp Style Poll UI --- */
+        .poll-container { margin-top: 15px; }
+        .poll-bar-row { margin: 15px 0; }
+        .poll-info { display: flex; justify-content: space-between; font-weight: 700; font-size: 0.9rem; margin-bottom: 6px; }
+        .poll-track { height: 12px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
+        .poll-fill { height: 100%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .fill-yes { background: #22c55e; }
+        .fill-no { background: #ef4444; }
+
+        /* --- Premium Modals --- */
+        .modal { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(15, 23, 42, 0.92); z-index: 2000; align-items: flex-end; 
+            justify-content: center; backdrop-filter: blur(8px);
+        }
+        .modal-content { 
+            background: #1e293b; border-radius: 45px 45px 0 0; padding: 40px; 
+            width: 100%; max-width: 550px; text-align: center; border-top: 4px solid #d4af37;
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 -20px 50px rgba(0,0,0,0.5);
+        }
+        .poll-option { display: block; width: 100%; margin: 15px 0; padding: 18px; border-radius: 22px; border: 1px solid rgba(255,255,255,0.1); background: rgba(15, 23, 42, 0.5); color: white; font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: 0.2s; }
+        .poll-option:hover { background: #d4af37; color: #0f172a; }
+        .btn-dismiss { background: transparent; color: #94a3b8; border: none; margin-top: 20px; font-weight: 600; cursor: pointer; text-decoration: underline; }
+
+        /* Animations */
+        @keyframes morph { 0% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; } 50% { border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%; } 100% { border-radius: 50% 50% 50% 50% / 30% 30% 70% 70%; } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes pulse-red { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     </style>
 </head>
 <body>
-    <div class="golden-frame" id="mainUi">
-        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/12/University_of_Kashmir_logo.png/200px-University_of_Kashmir_logo.png" class="ku-logo" onerror="this.src='https://placehold.co/100x100/1e5631/white?text=KU'">
-        <h2>UniVoice Student</h2>
-        <div class="session-info" id="sessionTopicDisplay"></div>
-        <div class="status-card" id="speakerStatus"><div>🎤 Speaking Status</div><div id="speakerTimer" class="timer-display">Not speaking</div></div>
-        <div class="action-buttons"><button id="requestSpeakBtn" class="btn-request">🎙️ Request to Speak</button></div>
-        <div class="emoji-picker">
-            <span class="emoji-btn" data-emoji="❤️">❤️</span>
-            <span class="emoji-btn" data-emoji="👍">👍</span>
-            <span class="emoji-btn" data-emoji="😂">😂</span>
-            <span class="emoji-btn" data-emoji="🎉">🎉</span>
-            <span class="emoji-btn" data-emoji="🤔">🤔</span>
+
+    <header class="brand-header">
+        <div class="custom-logo-mini"><div class="logo-shape-1"></div><div class="logo-shape-2">🎙️</div></div>
+        <p class="tagline-top">Crafted for voice that matters</p>
+        <h2>Audience Hub</h2>
+        <div class="hub-id-display" id="hubIdDisplay">HUB ID: ---</div>
+        <div class="live-counter-audience">
+            <div class="live-dot"></div>
+            <div class="live-count-text"><span id="pCount">0</span> Joined</div>
         </div>
+    </header>
+
+    <div class="golden-frame" id="mainUi">
+        <div class="session-info" id="sessionTopicDisplay">Establishing SRb Secure Connection...</div>
+        
+        <div class="status-card" id="speakerStatus">
+            <div style="font-weight: 600; opacity: 0.7; font-size: 0.8rem; letter-spacing: 1px;">🎤 TRANSMISSION STATUS</div>
+            <div id="speakerTimer" class="timer-display">Offline</div>
+        </div>
+
+        <button id="requestSpeakBtn" class="btn-request">🎙️ Request to Speak</button>
+
+        <div class="emoji-picker">
+            <span class="emoji-btn" onclick="sendEmoji('❤️')">❤️</span>
+            <span class="emoji-btn" onclick="sendEmoji('👍')">👍</span>
+            <span class="emoji-btn" onclick="sendEmoji('😂')">😂</span>
+            <span class="emoji-btn" onclick="sendEmoji('🎉')">🎉</span>
+            <span class="emoji-btn" onclick="sendEmoji('🤔')">🤔</span>
+        </div>
+
         <div class="message-area">
-            <input type="text" id="textInput" placeholder="Type your question...">
+            <input type="text" id="textInput" placeholder="Submit a query to the hub...">
             <button id="sendTextBtn">Send</button>
         </div>
     </div>
 
-    <div id="pollModal" class="modal"><div class="modal-content"><h3 id="pollQuestion"></h3><div id="pollOptions"></div></div></div>
-    <div id="directModal" class="modal"><div class="modal-content"><h3 id="directQuestion"></h3><input type="text" id="directAnswerInput" placeholder="Your answer..." style="width:100%; padding:12px; margin:15px 0; border-radius:30px;"><button id="submitDirectBtn" class="btn-request">Submit Answer</button></div></div>
-    
+    <div id="pollModal" class="modal">
+        <div class="modal-content">
+            <h3 id="pollQuestion" style="margin-bottom:25px; color:#fff; font-weight: 800;"></h3>
+            <div id="pollOptions">
+                </div>
+            <div id="pollResultsBars" style="display:none;" class="poll-container">
+                </div>
+            <button class="btn-dismiss" onclick="closeModal('pollModal')">Close Hub</button>
+        </div>
+    </div>
+
+    <div id="directModal" class="modal">
+        <div class="modal-content">
+            <h3 id="directQuestion" style="margin-bottom:25px; color:#fff; font-weight: 800;"></h3>
+            <input type="text" id="directAnswerInput" placeholder="Type your response..." style="width:100%; padding:20px; margin-bottom:20px; border-radius:25px; background:#0f172a; border:1px solid #334155; color:white; font-size: 1rem;">
+            <button id="submitDirectBtn" class="btn-request">Submit Response</button>
+            <button class="btn-dismiss" onclick="closeModal('directModal')">Dismiss</button>
+        </div>
+    </div>
+
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        // --- WEBRTC AUDIO VARIABLES ---
         let peerConnection = null;
         let localStream = null;
+        let currentSpeakerTimer = null;
+        let hasVoted = false;
 
         const urlParams = new URLSearchParams(window.location.search);
         const meetId = urlParams.get('meetId');
-        if (!meetId) { alert('Invalid session'); window.location.href = '/'; }
-        const name = sessionStorage.getItem('joinName') || 'Student';
+        if (!meetId) window.location.href = '/';
+
+        document.getElementById('hubIdDisplay').innerText = `HUB ID: ${meetId}`;
+
+        const name = sessionStorage.getItem('joinName') || 'Participant';
         const dept = sessionStorage.getItem('joinDept') || 'General';
         const roll = sessionStorage.getItem('joinRoll') || 'N/A';
         const password = sessionStorage.getItem('joinPassword') || '';
         const socket = io();
-        let allowVoiceGlobal = true, allowTextGlobal = true, currentSpeakerTimer = null;
+        let allowTextGlobal = true, allowVoiceGlobal = true;
         
         socket.emit('join-room', { meetId, name, dept, roll, password });
         
         socket.on('join-response', (response) => {
             if (!response.success) { alert(response.message); window.location.href = '/'; }
             else {
-                document.getElementById('sessionTopicDisplay').innerHTML = `📖 Session: ${response.sessionTopic}`;
+                document.getElementById('sessionTopicDisplay').innerHTML = `📖 Hub Topic: ${response.sessionTopic}`;
                 allowTextGlobal = response.allowText; allowVoiceGlobal = response.allowVoice;
-                if (!allowTextGlobal) document.getElementById('textInput').disabled = true;
-                if (!allowVoiceGlobal) document.getElementById('requestSpeakBtn').disabled = true;
+                document.getElementById('textInput').disabled = !allowTextGlobal;
+                document.getElementById('requestSpeakBtn').disabled = !allowVoiceGlobal;
             }
         });
+
+        socket.on('update-participant-count', (data) => {
+            document.getElementById('pCount').innerText = data.count;
+        });
         
-        document.getElementById('requestSpeakBtn').onclick = () => {
-            if (!allowVoiceGlobal) { alert('Voice queries disabled'); return; }
+        const reqBtn = document.getElementById('requestSpeakBtn');
+        reqBtn.onclick = () => {
+            if (!allowVoiceGlobal) return;
+            // Explicitly pass all tracking variables targeting back to server storage maps securely
             socket.emit('raise-hand', { meetId, name, dept, roll });
-            document.getElementById('requestSpeakBtn').innerText = '⏳ Request Sent';
-            document.getElementById('requestSpeakBtn').disabled = true;
-            setTimeout(() => {
-                document.getElementById('requestSpeakBtn').innerText = '🎙️ Request to Speak';
-                document.getElementById('requestSpeakBtn').disabled = false;
-            }, 3000);
+            reqBtn.innerText = '⏳ Waiting for Approval...';
+            reqBtn.disabled = true;
         };
 
-        // --- UPDATED SPEAKER ALLOWED LOGIC WITH AUDIO CAPTURE ---
-        socket.on('speaker-allowed', async ({ name: speakerName }) => {
-            if (navigator.vibrate) navigator.vibrate(500);
-            document.body.classList.add('green-flash');
-            setTimeout(() => document.body.classList.remove('green-flash'), 500);
-            document.getElementById('speakerStatus').innerHTML = `<div>🎤 You are speaking (Mic Live)</div><div id="speakerTimer" class="timer-display">60s left</div>`;
-            startTimer(60);
+        socket.on('speaker-rejected', () => {
+            reqBtn.innerText = '🎙️ Request to Speak';
+            reqBtn.disabled = !allowVoiceGlobal;
+        });
 
-            // Audio Transmission Logic
+        // --- DYNAMIC AUDIO SESSION (ECHO & NOISE FIX) ---
+        socket.on('speaker-allowed', async ({ duration }) => {
+            document.getElementById('speakerStatus').innerHTML = `<div style="color:#22c55e; font-weight:700;">● LIVE TRANSMISSION</div><div id="speakerTimer" class="timer-display">Ready</div>`;
+            startTimer(duration);
+
             try {
-                // Better constraints for mobile microphone capture
+                // FIXED: High quality mic constraints to stop echo and noise
                 localStream = await navigator.mediaDevices.getUserMedia({ 
-                    audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }, 
+                    audio: { 
+                        echoCancellation: true, 
+                        noiseSuppression: true, 
+                        autoGainControl: true,
+                        sampleRate: 48000,
+                        channelCount: 1 
+                    }, 
                     video: false 
                 });
                 
-                const iceConfiguration = {
+                peerConnection = new RTCPeerConnection({
                     iceServers: [
                         { urls: 'stun:stun.l.google.com:19302' },
-                        { urls: 'stun:stun1.l.google.com:19302' },
-                        {
-                            urls: 'turn:openrelay.metered.ca:80',
-                            username: 'openrelayproject',
-                            credential: 'openrelayproject'
-                        },
-                        {
-                            urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-                            username: 'openrelayproject',
-                            credential: 'openrelayproject'
-                        },
-                        {
-                            urls: 'turn:staticauth.openrelay.metered.ca:80',
-                            username: 'openrelayprojectsecret',
-                            credential: 'openrelayprojectsecret'
-                        }
+                        { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' }
                     ],
-                    iceCandidatePoolSize: 10 // Added to speed up mobile connections
-                };
-
-                peerConnection = new RTCPeerConnection(iceConfiguration);
-
-                // Log connection status for debugging
-                peerConnection.onconnectionstatechange = () => {
-                    console.log("WebRTC Connection State:", peerConnection.connectionState);
-                };
-                
-                localStream.getTracks().forEach(track => {
-                    track.enabled = true; 
-                    peerConnection.addTrack(track, localStream);
+                    iceCandidatePoolSize: 10
                 });
 
-                peerConnection.onicecandidate = (event) => {
-                    if (event.candidate) {
-                        socket.emit('webrtc-ice', { meetId, targetId: 'coordinator', candidate: event.candidate });
-                    }
+                localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+                peerConnection.onicecandidate = (e) => {
+                    if (e.candidate) socket.emit('webrtc-ice', { meetId, targetId: 'coordinator', candidate: e.candidate });
                 };
 
                 const offer = await peerConnection.createOffer();
@@ -166,110 +296,106 @@
                 socket.emit('webrtc-offer', { meetId, targetId: 'coordinator', sdp: peerConnection.localDescription });
             } catch (err) {
                 console.error("Mic Error:", err);
-                alert("Microphone access denied! Ensure you are using HTTPS on your mobile browser.");
             }
         });
 
-        socket.on('speaker-rejected', ({ name }) => {
-            alert(`Your request to speak was declined by the coordinator.`);
-            document.getElementById('requestSpeakBtn').disabled = false;
-        });
-
-        function startTimer(seconds) {
+        function startTimer(duration) {
             if (currentSpeakerTimer) clearInterval(currentSpeakerTimer);
-            let remaining = seconds;
             const timerDiv = document.getElementById('speakerTimer');
+            if (duration === 0) { timerDiv.innerText = "∞ No Limit"; return; }
+            let remaining = duration;
             currentSpeakerTimer = setInterval(() => {
                 remaining--;
-                if (timerDiv) timerDiv.innerText = `${remaining}s left`;
-                if (remaining <= 0) { clearInterval(currentSpeakerTimer); timerDiv.innerText = 'Time up'; }
-                if (remaining === 15) { if (navigator.vibrate) navigator.vibrate([200,100,200]); alert('⚠️ 15 seconds remaining!'); }
+                timerDiv.innerText = `${Math.ceil(remaining)}s left`;
+                if (remaining <= 15) timerDiv.classList.add('critical');
+                if (remaining <= 0) { clearInterval(currentSpeakerTimer); timerDiv.innerText = 'Offline'; }
             }, 1000);
         }
 
-        // --- UPDATED SPEAKER REVOKED LOGIC WITH AUDIO CLEANUP ---
+        socket.on('time-warning', () => { if (navigator.vibrate) navigator.vibrate([300, 100, 300]); });
+
         socket.on('speaker-revoked', () => {
             if (currentSpeakerTimer) clearInterval(currentSpeakerTimer);
-            document.getElementById('speakerStatus').innerHTML = `<div>🎤 Speaking Status</div><div id="speakerTimer" class="timer-display">Not speaking</div>`;
-            document.getElementById('requestSpeakBtn').disabled = false;
-
-            if (localStream) {
-                localStream.getTracks().forEach(track => track.stop());
-                localStream = null;
-            }
-            if (peerConnection) {
-                peerConnection.close();
-                peerConnection = null;
-            }
+            document.getElementById('speakerStatus').innerHTML = `<div style="opacity:0.6;">🎤 Speaking Status</div><div id="speakerTimer" class="timer-display">Offline</div>`;
+            reqBtn.disabled = !allowVoiceGlobal;
+            reqBtn.innerText = '🎙️ Request to Speak';
+            if (localStream) { localStream.getTracks().forEach(track => track.stop()); localStream = null; }
+            if (peerConnection) { peerConnection.close(); peerConnection = null; }
         });
 
-        // --- WEBRTC LISTENER LOGIC ---
-        socket.on('webrtc-answer', async ({ sdp }) => {
-            if (peerConnection) await peerConnection.setRemoteDescription(new RTCSessionDescription(sdp));
-        });
+        socket.on('webrtc-answer', async ({ sdp }) => { if (peerConnection) await peerConnection.setRemoteDescription(new RTCSessionDescription(sdp)); });
+        socket.on('webrtc-ice', async ({ candidate }) => { if (peerConnection) await peerConnection.addIceCandidate(new RTCIceCandidate(candidate)); });
 
-        socket.on('webrtc-ice', async ({ candidate }) => {
-            if (peerConnection) await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-        });
-
-        socket.on('time-warning', ({ remaining }) => { if (navigator.vibrate) navigator.vibrate(300); alert(`⚠️ ${Math.ceil(remaining)} seconds remaining!`); });
-        
         document.getElementById('sendTextBtn').onclick = () => {
             const msg = document.getElementById('textInput').value;
-            if (!msg.trim()) return;
-            if (!allowTextGlobal) { alert('Text queries disabled'); return; }
+            if (!msg.trim() || !allowTextGlobal) return;
             socket.emit('student-message', { meetId, message: msg, name });
             document.getElementById('textInput').value = '';
         };
         
-        document.querySelectorAll('.emoji-btn').forEach(btn => { 
-            btn.onclick = () => { socket.emit('send-emoji', { meetId, emoji: btn.getAttribute('data-emoji') }); }; 
-        });
-        
-        socket.on('poll-received', ({ type, question, options }) => {
-            const modal = document.getElementById('pollModal');
+        window.sendEmoji = (emoji) => { socket.emit('send-emoji', { meetId, emoji }); };
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; hasVoted = false; }
+
+        // --- WHATSAPP STYLE POLL HANDLERS ---
+        socket.on('poll-received', ({ question, options }) => {
             document.getElementById('pollQuestion').innerText = question;
             const optsDiv = document.getElementById('pollOptions');
-            optsDiv.innerHTML = options.map(opt => `<button class="poll-option" data-answer="${opt}">${opt}</button>`).join('');
-            modal.style.display = 'flex';
-            document.querySelectorAll('.poll-option').forEach(btn => { 
-                btn.onclick = () => { 
-                    socket.emit('submit-poll-response', { meetId, answer: btn.innerText, name }); 
-                    modal.style.display = 'none'; 
-                    alert('Response submitted!'); 
-                }; 
-            });
+            const barsDiv = document.getElementById('pollResultsBars');
+            
+            optsDiv.style.display = 'block';
+            barsDiv.style.display = 'none';
+            
+            optsDiv.innerHTML = options.map(opt => `<button class="poll-option" onclick="submitVote('${opt}')">${opt}</button>`).join('');
+            document.getElementById('pollModal').style.display = 'flex';
         });
-        
+
+        window.submitVote = (answer) => {
+            socket.emit('submit-poll-response', { meetId, answer, name });
+            document.getElementById('pollOptions').style.display = 'none';
+            document.getElementById('pollResultsBars').style.display = 'block';
+            hasVoted = true;
+        };
+
+        socket.on('poll-update-results', ({ yes, no, total }) => {
+            if(!hasVoted) return; // Only show results if student has voted
+            const yesPerc = total > 0 ? (yes / total) * 100 : 0;
+            const noPerc = total > 0 ? (no / total) * 100 : 0;
+
+            document.getElementById('pollResultsBars').innerHTML = `
+                <div class="poll-bar-row">
+                    <div class="poll-info"><span>YES</span><span>${Math.round(yesPerc)}%</span></div>
+                    <div class="poll-track"><div class="poll-fill fill-yes" style="width:${yesPerc}%"></div></div>
+                </div>
+                <div class="poll-bar-row">
+                    <div class="poll-info"><span>NO</span><span>${Math.round(noPerc)}%</span></div>
+                    <div class="poll-track"><div class="poll-fill fill-no" style="width:${noPerc}%"></div></div>
+                </div>
+                <p style="font-size:0.8rem; margin-top:10px; color:#94a3b8;">Total Votes: ${total}</p>
+            `;
+        });
+
         socket.on('direct-prompt-received', ({ question, promptId }) => {
-            const modal = document.getElementById('directModal');
             document.getElementById('directQuestion').innerText = question;
-            modal.style.display = 'flex';
+            document.getElementById('directModal').style.display = 'flex';
             window.currentPromptId = promptId;
         });
-        
+
         document.getElementById('submitDirectBtn').onclick = () => {
             const answer = document.getElementById('directAnswerInput').value;
             if (!answer.trim()) return;
             socket.emit('submit-direct-answer', { meetId, answer, name, promptId: window.currentPromptId });
-            document.getElementById('directModal').style.display = 'none';
+            closeModal('directModal');
             document.getElementById('directAnswerInput').value = '';
-            alert('Answer sent to coordinator');
         };
+
+        socket.on('session-ended', () => { window.location.href = '/'; });
         
-        socket.on('session-ended', () => { alert('Session ended by coordinator.'); window.location.href = '/'; });
-        
-        socket.on('settings-updated', ({ allowText, allowVoice }) => {
-            allowTextGlobal = allowText; allowVoiceGlobal = allowVoice;
-            document.getElementById('textInput').disabled = !allowText;
-            document.getElementById('requestSpeakBtn').disabled = !allowVoice;
-            if (!allowVoice && currentSpeakerTimer) { 
-                clearInterval(currentSpeakerTimer); 
-                document.getElementById('speakerStatus').innerHTML = `<div>🎤 Speaking Status</div><div id="speakerTimer" class="timer-display">Not speaking</div>`; 
-            }
+        socket.on('settings-updated', (data) => {
+            allowTextGlobal = data.allowText; allowVoiceGlobal = data.allowVoice;
+            document.getElementById('textInput').disabled = !allowTextGlobal;
+            reqBtn.disabled = !allowVoiceGlobal;
         });
-        
-        window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
     </script>
 </body>
 </html>

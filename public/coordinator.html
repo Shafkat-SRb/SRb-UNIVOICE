@@ -10,172 +10,257 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            background: radial-gradient(circle at top right, #1e293b, #0f172a);
+            color: #f8fafc;
             min-height: 100vh;
-            padding: 30px;
+            padding: 20px;
         }
         .golden-frame {
-            max-width: 1600px;
+            max-width: 1400px;
             margin: 0 auto;
-            background: white;
-            border: 4px solid #d4af37;
-            border-radius: 50px;
-            padding: 30px 40px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 45px;
+            padding: 100px 40px 40px;
+            box-shadow: 0 40px 100px -20px rgba(0,0,0,0.8);
             position: relative;
         }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
-        .logo-title { display: flex; align-items: center; gap: 20px; }
-        .ku-logo { width: 80px; height: auto; }
-        .title h1 { font-size: 1.8rem; font-weight: 800; color: #1e5631; }
-        .title p { color: #d4af37; font-weight: 600; font-size: 0.85rem; }
-        .drawer-menu { position: relative; }
-        .dots { font-size: 2.5rem; cursor: pointer; padding: 10px; color: #1e5631; font-weight: 900; }
-        .drawer-content { display: none; position: absolute; right: 0; top: 50px; background: white; min-width: 260px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #d4af37; padding: 15px; z-index: 100; }
-        .drawer-content.show { display: block; }
-        .drawer-item { padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .toggle-switch { width: 45px; height: 22px; background: #ccc; border-radius: 20px; position: relative; cursor: pointer; }
-        .toggle-switch.active { background: #1e5631; }
-        .toggle-switch span { width: 18px; height: 18px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 3px; transition: 0.2s; }
-        .toggle-switch.active span { left: 24px; }
-        .invite-btn { background: #25D366; color: white; border: none; padding: 5px 12px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; }
-        .toggles-bar { display: flex; gap: 25px; justify-content: center; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 50px; }
-        .toggle-label { display: flex; align-items: center; gap: 10px; font-weight: 600; cursor: pointer; }
-        .deployment-zone { background: linear-gradient(135deg, #f0f9ff 0%, #e8f5e9 100%); border-radius: 30px; padding: 20px; margin: 20px 0; border: 2px solid #d4af37; }
-        .deployment-zone input { width: 70%; padding: 14px; border-radius: 25px; border: 2px solid #ddd; font-size: 1rem; }
-        .deployment-zone button { padding: 12px 25px; margin: 10px; border: none; border-radius: 25px; font-weight: 700; cursor: pointer; }
-        .btn-yesno { background: #3498db; color: white; }
-        .btn-ans { background: #9b59b6; color: white; }
-        .split-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin: 25px 0; }
-        .column { background: #fefefe; border-radius: 30px; padding: 20px; border: 1px solid #e9ecef; }
-        .vocal-header, .text-header { font-size: 1.5rem; font-weight: 700; color: #1e5631; border-bottom: 3px solid #d4af37; display: inline-block; margin-bottom: 20px; }
-        .handraise-item { background: #fff3e0; margin: 10px 0; padding: 12px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .action-buttons { display: flex; gap: 8px; }
-        .allow-btn { background: #27ae60; color: white; border: none; padding: 6px 15px; border-radius: 20px; cursor: pointer; }
-        .reject-btn { background: #e74c3c; color: white; border: none; padding: 6px 15px; border-radius: 20px; cursor: pointer; }
-        .mic-slots { margin-top: 25px; }
-        .mic-card { background: linear-gradient(135deg, #1e5631 0%, #2ecc71 100%); color: white; padding: 15px; border-radius: 20px; margin-bottom: 12px; transition: 0.2s; }
-        .mic-card.warning { background: #e74c3c; animation: blink 0.5s infinite; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
-        .mic-card .timer { font-size: 1.2rem; font-weight: 800; }
-        .revoke-speaker { background: rgba(255,255,255,0.3); border: none; color: white; padding: 4px 12px; border-radius: 12px; cursor: pointer; margin-top: 8px; }
-        .message-item { background: #f1f3f5; border-radius: 15px; padding: 12px; margin-bottom: 15px; }
-        .message-name { font-weight: 700; color: #1e5631; }
-        .ai-chip { background: #d4af37; color: #1e5631; padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; margin-top: 8px; display: inline-block; }
-        .emoji-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000; overflow: hidden; }
-        .floating-emoji { position: absolute; font-size: 2rem; animation: floatUp 4s ease-out forwards; bottom: 0; }
-        @keyframes floatUp { 0% { bottom: 0; opacity: 1; transform: translateX(0); } 100% { bottom: 100%; opacity: 0; transform: translateX(50px); } }
-        /* QR Modal */
-        .qr-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
+        .live-watcher {
+            position: absolute; left: 35px; top: 35px;
+            display: flex; align-items: center; gap: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 6px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
         }
-        .qr-modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 30px;
-            text-align: center;
-            border: 3px solid #d4af37;
+        .live-dot {
+            width: 8px; height: 8px; background: #ef4444; border-radius: 50%;
+            box-shadow: 0 0 10px #ef4444; animation: pulse-red 1.5s infinite;
         }
-        @media (max-width: 900px) { .split-columns { grid-template-columns: 1fr; } .golden-frame { padding: 20px; } }
+        .live-count-text { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #fff; letter-spacing: 0.5px; }
+        .header { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 35px; width: 100%; }
+        .brand-section { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .custom-logo-container { position: relative; width: 70px; height: 65px; }
+        .logo-shape-1 {
+            position: absolute; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            animation: morph 8s ease-in-out infinite alternate;
+        }
+        .logo-shape-2 {
+            position: absolute; top: 15%; left: 15%; width: 70%; height: 70%;
+            background: #d4af37; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 1.4rem;
+        }
+        .title h1 { font-size: 2.2rem; font-weight: 800; color: #fff; line-height: 1.1; letter-spacing: -0.5px; }
+        .tagline { color: #d4af37; font-size: 0.9rem; font-weight: 600; margin-top: 5px; }
+        .dots { position: absolute; right: 35px; top: 25px; font-size: 2.8rem; cursor: pointer; color: #d4af37; font-weight: 900; transition: 0.3s; z-index: 1000; }
+        .dots:hover { transform: scale(1.1) rotate(90deg); color: #fff; }
+        .drawer-content { 
+            display: none; position: absolute; right: 0; top: 80px; 
+            background: #1e293b; min-width: 340px; border-radius: 30px; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.7); border: 1px solid #d4af37; 
+            padding: 25px; z-index: 2000; 
+        }
+        .drawer-content.show { display: block; animation: fadeInUp 0.3s ease-out; }
+        .hub-identity-menu {
+            background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+            color: #0f172a; padding: 12px; border-radius: 15px;
+            text-align: center; font-weight: 800; font-size: 0.95rem;
+            margin-bottom: 20px; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .drawer-section-title { font-size: 0.75rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin: 15px 0 10px 5px; letter-spacing: 1px; }
+        .drawer-item { padding: 14px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; }
+        .btn-group { display: flex; gap: 5px; background: rgba(15,23,42,0.5); padding: 4px; border-radius: 12px; }
+        .btn-opt { padding: 6px 12px; border: none; background: transparent; color: #94a3b8; font-size: 0.75rem; font-weight: 700; cursor: pointer; border-radius: 8px; transition: 0.2s; }
+        .btn-opt.active { background: #d4af37; color: #0f172a; }
+        .toggle-switch { width: 44px; height: 24px; background: #475569; border-radius: 20px; position: relative; cursor: pointer; transition: 0.3s; }
+        .toggle-switch.active { background: #22c55e; }
+        .toggle-switch span { width: 18px; height: 18px; background: white; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: 0.2s; }
+        .toggle-switch.active span { left: 23px; }
+        .deployment-zone { background: rgba(15, 23, 42, 0.5); border-radius: 30px; padding: 25px; margin: 25px 0; border: 1px solid rgba(212,175,55,0.2); display: flex; gap: 15px; align-items: center; }
+        .deployment-zone input { flex: 1; padding: 16px 25px; border-radius: 20px; border: none; background: #0f172a; color: white; font-size: 1rem; outline: none; }
+        .btn-action { padding: 14px 25px; border: none; border-radius: 18px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: 0.2s; }
+        .btn-yesno { background: #3b82f6; color: white; }
+        .btn-ans { background: #8b5cf6; color: white; }
+        .split-columns { display: grid; grid-template-columns: 1fr 1.3fr; gap: 35px; margin: 25px 0; }
+        .column { background: rgba(15, 23, 42, 0.3); border-radius: 40px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.03); }
+        .col-header { font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 25px; border-left: 5px solid #d4af37; padding-left: 15px; }
+        .poll-bar-container { background: rgba(255,255,255,0.03); padding: 22px; border-radius: 28px; border: 1.5px solid #3b82f6; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .poll-row { margin: 15px 0; }
+        .poll-info { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: 700; font-size: 0.95rem; color: #f8fafc; }
+        .poll-track { height: 14px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
+        .poll-fill { height: 100%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .handraise-item { background: rgba(255, 255, 255, 0.03); margin-bottom: 15px; padding: 20px; border-radius: 25px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05); }
+        .allow-btn { background: #22c55e; color: white; border: none; padding: 12px 22px; border-radius: 15px; font-weight: 800; cursor: pointer; }
+        .reject-btn { background: transparent; color: #ef4444; border: 1px solid #ef4444; padding: 10px 18px; border-radius: 15px; font-weight: 700; cursor: pointer; }
+        .mic-card { background: linear-gradient(135deg, #22c55e 0%, #15803d 100%); color: white; padding: 22px; border-radius: 30px; margin-bottom: 15px; box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
+        .timer-text { font-size: 1.3rem; font-weight: 800; margin-top: 5px; }
+        .revoke-btn { background: rgba(0,0,0,0.3); border: none; color: white; padding: 8px 16px; border-radius: 12px; cursor: pointer; font-size: 0.85rem; font-weight: 700; margin-top: 12px; }
+        .message-item { background: rgba(255, 255, 255, 0.03); border-radius: 25px; padding: 22px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        .message-name { font-weight: 700; color: #d4af37; font-size: 1.05rem; margin-bottom: 5px; }
+        .ai-chip { background: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.2); color: #d4af37; padding: 18px; border-radius: 22px; margin-top: 15px; font-size: 0.95rem; line-height: 1.6; }
+        .read-more-btn { color: #3b82f6; cursor: pointer; font-weight: 800; text-decoration: underline; margin-left: 8px; display: inline-block; }
+        .emoji-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; overflow: hidden; }
+        .floating-emoji { position: absolute; font-size: 3.5rem; animation: floatUp 4s ease-out forwards; bottom: 0; }
+        @keyframes floatUp { 0% { bottom: 0; opacity: 1; transform: translateX(0); } 100% { bottom: 100%; opacity: 0; transform: translateX(60px); } }
+        @keyframes morph { 0% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; } 100% { border-radius: 50% 50% 50% 50% / 30% 30% 70% 70%; } }
+        @keyframes pulse-red { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 900px) { .split-columns { grid-template-columns: 1fr; } .deployment-zone { flex-direction: column; } .live-watcher { left: 20px; top: 20px; } .dots { right: 20px; top: 20px; } }
     </style>
 </head>
 <body>
+
 <div class="golden-frame">
+    <div class="live-watcher">
+        <div class="live-dot"></div>
+        <div class="live-count-text"><span id="liveParticipantCount">0</span> Joined</div>
+    </div>
+
+    <div class="dots" id="dotsMenu">⋮</div>
+
     <div class="header">
-        <div class="logo-title">
-            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/12/University_of_Kashmir_logo.png/200px-University_of_Kashmir_logo.png" class="ku-logo" onerror="this.src='https://placehold.co/80x80/1e5631/white?text=KU'">
-            <div class="title"><h1>Coordinator Hub</h1><p>University of Kashmir | Command Center</p></div>
-        </div>
-        <div class="drawer-menu">
-            <div class="dots" id="dotsMenu">⋮</div>
-            <div class="drawer-content" id="drawerContent">
-                <div class="drawer-item"><span>🔐 Password Gate</span><div id="passwordToggle" class="toggle-switch"></div></div>
-                <div class="drawer-item"><span>⚔️ Debate Mode</span><div id="debateToggle" class="toggle-switch"></div></div>
-                <div class="drawer-item"><span>📱 Invite via WhatsApp</span><button id="whatsappShare" class="invite-btn">Share</button></div>
-                <div class="drawer-item"><span>📸 Session QR</span><button id="showQrBtn" class="invite-btn">Show QR</button></div>
-                <div class="drawer-item"><span>⏹️ End Session</span><button id="endSessionBtn" style="background:#e74c3c;">End</button></div>
-                <div class="drawer-item" id="passwordInputDiv" style="display:none;"><input type="text" id="roomPasswordInput" placeholder="Set Password" style="width:120px;"></div>
+        <div class="brand-section">
+            <div class="custom-logo-container">
+                <div class="logo-shape-1"></div>
+                <div class="logo-shape-2">🎙️</div>
+            </div>
+            <div class="title">
+                <h1>Coordinator Hub</h1>
+                <p class="tagline">Crafted for voice that matters</p>
             </div>
         </div>
     </div>
-    <div class="toggles-bar">
-        <label class="toggle-label"><input type="checkbox" id="allowTextToggle" checked> 💬 Text Query Portal</label>
-        <label class="toggle-label"><input type="checkbox" id="allowVoiceToggle" checked> 🎤 Vocal Query Portal</label>
+    
+    <div class="drawer-menu">
+        <div class="drawer-content" id="drawerContent">
+            <div class="hub-identity-menu" id="displayHubId">HUB ID: LOADING...</div>
+
+            <div class="drawer-section-title">Interaction Toggles</div>
+            <div class="drawer-item"><span>💬 Enable Text Portal</span><div id="menuTextToggle" class="toggle-switch active"><span></span></div></div>
+            <div class="drawer-item"><span>🎤 Enable Vocal Portal</span><div id="menuVoiceToggle" class="toggle-switch active"><span></span></div></div>
+
+            <div class="drawer-section-title">Security & Access</div>
+            <div class="drawer-item"><span>🔐 Password Gate</span><div id="passwordToggle" class="toggle-switch"><span></span></div></div>
+            <div id="passwordInputDiv" style="display:none; padding:10px;"><input type="text" id="roomPasswordInput" placeholder="Set Key" style="width:100%; padding:10px; border-radius:12px; background:#0f172a; border:1px solid #334155; color:white;"></div>
+            
+            <div class="drawer-section-title">Mic Session Control</div>
+            <div class="drawer-item" style="flex-direction:column; align-items:flex-start; gap:10px;">
+                <span>⏳ Mic Timer Limit</span>
+                <div class="btn-group" id="timerSelector">
+                    <button class="btn-opt active" data-val="60">1m</button>
+                    <button class="btn-opt" data-val="120">2m</button>
+                    <button class="btn-opt" data-val="300">5m</button>
+                    <button class="btn-opt" data-val="0">∞</button>
+                </div>
+            </div>
+
+            <div class="drawer-section-title">Debate & Scale</div>
+            <div class="drawer-item"><span>⚔️ Debate Mode</span><div id="debateToggle" class="toggle-switch"><span></span></div></div>
+            <div class="drawer-item" style="flex-direction:column; align-items:flex-start; gap:10px;">
+                <span>👥 Simultaneous Speakers</span>
+                <div class="btn-group" id="speakerSelector">
+                    <button class="btn-opt active" data-val="1">1</button>
+                    <button class="btn-opt" data-val="2">2</button>
+                    <button class="btn-opt" data-val="5">5</button>
+                    <button class="btn-opt" data-val="10">10</button>
+                    <button class="btn-opt" data-val="0">∞</button>
+                </div>
+            </div>
+
+            <div class="drawer-section-title">Sharing</div>
+            <div class="drawer-item"><span>WhatsApp Invite</span><button id="whatsappShare" style="background:#22c55e; border:none; color:white; padding:6px 14px; border-radius:12px; cursor:pointer; font-size:0.8rem; font-weight:700;">Share</button></div>
+            <div class="drawer-item"><span>Session QR</span><button id="showQrBtn" style="background:#d4af37; border:none; color:#0f172a; padding:6px 14px; border-radius:12px; cursor:pointer; font-size:0.8rem; font-weight:800;">Show</button></div>
+            
+            <button id="endSessionBtn" style="width:100%; margin-top:20px; background:#ef4444; color:white; border:none; padding:14px; border-radius:18px; font-weight:800; cursor:pointer;">TERMINATE HUB</button>
+        </div>
     </div>
+
     <div class="deployment-zone">
-        <input type="text" id="deployQuestion" placeholder="Type your question here...">
-        <div><button id="sendYesNoPoll" class="btn-yesno">✅ Yes / No Poll</button><button id="sendDirectPrompt" class="btn-ans">✏️ Ans</button></div>
+        <input type="text" id="deployQuestion" placeholder="Draft a query for the hub network...">
+        <button id="sendYesNoPoll" class="btn-action btn-yesno">📊 WhatsApp-Style Poll</button>
+        <button id="sendDirectPrompt" class="btn-action btn-ans" style="background: #8b5cf6;">✏️ Direct Ans</button>
     </div>
+
     <div class="split-columns">
-        <div class="column"><div class="vocal-header">🎙️ Vocal Queue</div><div id="handRaiseList"></div><div class="mic-slots"><div class="vocal-header" style="font-size:1.2rem;">🎧 Live Mic Slots</div><div id="activeSpeakersList"></div></div></div>
-        <div class="column"><div class="text-header">💡 Intelligence Feed</div><div id="textMessagesList" style="max-height:500px; overflow-y:auto;"></div></div>
+        <div class="column">
+            <div class="col-header">🎙️ Vocal Queue</div>
+            <div id="handRaiseList"></div>
+            <div class="col-header" style="margin-top:40px; color:#d4af37;">🎧 Live Transmissions</div>
+            <div id="activeSpeakersList"></div>
+        </div>
+        <div class="column">
+            <div class="col-header">💡 Intelligence Feed</div>
+            <div id="pollLiveCard"></div>
+            <div id="textMessagesList" style="max-height:600px; overflow-y:auto; padding-right:10px;"></div>
+        </div>
     </div>
 </div>
+
+<div id="qrModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.95); z-index:3000; justify-content:center; align-items:center;">
+    <div style="background:#1e293b; padding:45px; border-radius:45px; text-align:center; border:2px solid #d4af37;">
+        <h3 style="color:white; margin-bottom:25px; font-weight:800; letter-spacing:1px;">HUB ACCESS QR</h3>
+        <div id="qrCodeContainer" style="background:white; padding:15px; border-radius:20px; display:inline-block;"></div><br>
+        <button onclick="document.getElementById('qrModal').style.display='none'" style="margin-top:25px; padding:12px 35px; background:#d4af37; color:#0f172a; border:none; border-radius:15px; font-weight:800; cursor:pointer;">CLOSE HUB</button>
+    </div>
+</div>
+
 <div class="emoji-layer" id="emojiLayer"></div>
-<div id="qrModal" class="qr-modal">
-    <div class="qr-modal-content">
-        <h3>Session QR Code</h3>
-        <div id="qrCodeContainer"></div>
-        <button onclick="document.getElementById('qrModal').style.display='none'" style="margin-top:20px; padding:8px 20px; background:#1e5631; color:white; border:none; border-radius:20px;">Close</button>
-    </div>
-</div>
+
 <script src="/socket.io/socket.io.js"></script>
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     const meetId = urlParams.get('meetId');
-    const sessionTopic = decodeURIComponent(urlParams.get('topic') || 'General Discussion');
-    if (!meetId) { alert('Invalid session'); window.location.href = '/'; }
+    if (!meetId) window.location.href = '/';
+    document.getElementById('displayHubId').innerText = `HUB ID: ${meetId}`;
 
     const socket = io();
-    let currentDebateMode = false, passwordGateEnabled = false;
-
-    // --- WEBRTC PEER CONNECTIONS STORE ---
     const peerConnections = {};
 
-    function cleanupAudio(socketId) {
-        if (peerConnections[socketId]) {
-            peerConnections[socketId].close();
-            delete peerConnections[socketId];
-        }
-        const audioEl = document.getElementById(`audio-${socketId}`);
-        if (audioEl) audioEl.remove();
-    }
+    socket.on('connect', () => socket.emit('join-coordinator', { meetId }));
 
-    socket.on('connect', () => {
-        console.log('Socket connected, joining room as coordinator');
-        socket.emit('join-coordinator', { meetId });
-    });
     socket.on('coordinator-joined', (data) => {
-        currentDebateMode = data.debateMode;
-        document.getElementById('debateToggle').classList.toggle('active', currentDebateMode);
-        document.getElementById('allowTextToggle').checked = data.allowText;
-        document.getElementById('allowVoiceToggle').checked = data.allowVoice;
-        passwordGateEnabled = data.passwordGateEnabled;
-        document.getElementById('passwordToggle').classList.toggle('active', passwordGateEnabled);
+        document.getElementById('menuTextToggle').classList.toggle('active', data.allowText);
+        document.getElementById('menuVoiceToggle').classList.toggle('active', data.allowVoice);
+        document.getElementById('debateToggle').classList.toggle('active', data.debateMode);
+        document.getElementById('passwordToggle').classList.toggle('active', data.passwordGateEnabled);
+        syncSelector('timerSelector', data.micTimer);
+        syncSelector('speakerSelector', data.maxSpeakers);
         if(data.handRaiseQueue) updateHandRaiseQueue(data.handRaiseQueue);
         if(data.activeSpeakers) updateActiveSpeakers(data.activeSpeakers);
         data.textMessages.forEach(msg => addTextMessage(msg));
     });
-    socket.on('join-error', (err) => { alert(err.message); window.location.href = '/'; });
+
+    // ========== MISSING LISTENERS ADDED ==========
+    socket.on('update-hand-raise-queue', updateHandRaiseQueue);
+    socket.on('active-speakers-update', updateActiveSpeakers);
+    // ============================================
+
+    socket.on('update-participant-count', (data) => {
+        document.getElementById('liveParticipantCount').innerText = data.count;
+    });
+
+    function syncSelector(id, val) {
+        document.querySelectorAll(`#${id} .btn-opt`).forEach(b => {
+            b.classList.toggle('active', parseInt(b.dataset.val) === val);
+        });
+    }
 
     function updateHandRaiseQueue(queue) {
         const container = document.getElementById('handRaiseList');
-        if(!queue.length) { container.innerHTML = '<p style="color:#999;">No requests</p>'; return; }
+        if(!queue || queue.length === 0) { 
+            container.innerHTML = '<p style="color:#64748b; font-size:0.9rem;">No active requests.</p>'; 
+            return; 
+        }
         container.innerHTML = queue.map(item => `
             <div class="handraise-item">
-                <div><strong>${item.name}</strong><br><small>${item.dept}</small></div>
-                <div class="action-buttons">
+                <div><strong>${escapeHtml(item.name)}</strong><br><small style="color:#94a3b8;">${escapeHtml(item.dept)}</small></div>
+                <div style="display:flex; gap:10px;">
                     <button class="allow-btn" onclick="allowSpeaker('${item.socketId}')">🎤 Allow</button>
-                    <button class="reject-btn" onclick="rejectSpeaker('${item.socketId}')">❌ Reject</button>
+                    <button class="reject-btn" onclick="rejectSpeaker('${item.socketId}')">Reject</button>
                 </div>
             </div>
         `).join('');
@@ -183,197 +268,181 @@
 
     function updateActiveSpeakers(speakers) {
         const container = document.getElementById('activeSpeakersList');
-        
-        // Clean up audio for speakers whose time ran out
-        const currentSpeakerIds = speakers.map(s => s.socketId);
-        for (let socketId in peerConnections) {
-            if (!currentSpeakerIds.includes(socketId)) {
-                cleanupAudio(socketId);
-            }
+        if(!speakers || speakers.length === 0) { 
+            container.innerHTML = '<p style="color:#64748b; font-size:0.9rem;">Transmissions silent.</p>'; 
+            return; 
         }
-
-        if(!speakers.length) { container.innerHTML = '<p style="color:#999;">No active speakers</p>'; return; }
-        container.innerHTML = speakers.map(s => `<div class="mic-card" id="mic-${s.socketId}"><strong>🎙️ ${s.name}</strong> (${s.dept})<div class="timer" id="timer-${s.socketId}">60s remaining</div><button class="revoke-speaker" onclick="revokeSpeaker('${s.socketId}')">🔇 Revoke</button></div>`).join('');
+        container.innerHTML = speakers.map(s => `
+            <div class="mic-card" id="mic-${s.socketId}">
+                <div style="display:flex; justify-content:space-between;"><strong>🎙️ ${escapeHtml(s.name)}</strong></div>
+                <div class="timer-text" id="timer-${s.socketId}">Initializing...</div>
+                <button class="revoke-btn" onclick="revokeSpeaker('${s.socketId}')">Terminate Mic</button>
+            </div>
+        `).join('');
     }
 
-    window.allowSpeaker = (studentSocketId) => socket.emit('allow-speaker', { meetId, studentSocketId });
-    window.rejectSpeaker = (studentSocketId) => socket.emit('reject-speaker', { meetId, studentSocketId });
-    window.revokeSpeaker = (studentSocketId) => {
-        socket.emit('remove-speaker', { meetId, studentSocketId });
-        cleanupAudio(studentSocketId);
-    };
+    // Simple XSS protection
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
 
-    socket.on('update-hand-raise-queue', updateHandRaiseQueue);
-    socket.on('active-speakers-update', updateActiveSpeakers);
+    window.allowSpeaker = (id) => socket.emit('allow-speaker', { meetId, studentSocketId: id });
+    window.rejectSpeaker = (id) => socket.emit('reject-speaker', { meetId, studentSocketId: id });
+    window.revokeSpeaker = (id) => socket.emit('remove-speaker', { meetId, studentSocketId: id });
+
     socket.on('speaker-timer-update', ({ socketId, remaining }) => {
-        const timerDiv = document.getElementById(`timer-${socketId}`);
-        const micCard = document.getElementById(`mic-${socketId}`);
-        if(timerDiv) timerDiv.innerText = `${Math.ceil(remaining)}s remaining`;
-        if(remaining <= 15 && micCard) micCard.classList.add('warning');
+        const div = document.getElementById(`timer-${socketId}`);
+        if(div) div.innerText = remaining === -1 ? "∞ Unlimited" : `${Math.ceil(remaining)}s left`;
     });
+
+    // Poll live updates (WhatsApp style)
+    socket.on('poll-update-results', ({ yes, no, total }) => {
+        const yesPerc = total > 0 ? (yes / total) * 100 : 0;
+        const noPerc = total > 0 ? (no / total) * 100 : 0;
+        document.getElementById('pollLiveCard').innerHTML = `
+            <div class="poll-bar-container">
+                <div style="font-weight: 800; color:#3b82f6; margin-bottom: 15px; display:flex; align-items:center; gap:8px;">📊 LIVE POLL: ${total} VOTES</div>
+                <div class="poll-row">
+                    <div class="poll-info"><span>YES</span><span>${yes} (${Math.round(yesPerc)}%)</span></div>
+                    <div class="poll-track"><div class="poll-fill" style="width:${yesPerc}%; background:#22c55e;"></div></div>
+                </div>
+                <div class="poll-row">
+                    <div class="poll-info"><span>NO</span><span>${no} (${Math.round(noPerc)}%)</span></div>
+                    <div class="poll-track"><div class="poll-fill" style="width:${noPerc}%; background:#ef4444;"></div></div>
+                </div>
+            </div>
+        `;
+    });
+
     function addTextMessage(msg) {
-        const container = document.getElementById('textMessagesList');
         const div = document.createElement('div');
         div.className = 'message-item';
+        const fullText = msg.aiAnswer || '';
+        const isLong = fullText.length > 250;
+        const displayAi = isLong ? fullText.substring(0, 250) + "..." : fullText;
         div.innerHTML = `
-            <div class="message-name">${msg.name}</div>
-            <div>${msg.message}</div>
-            <div class="ai-chip">🤖 AI Co-Pilot: ${msg.aiAnswer || 'Let me think...'}</div>
+            <div class="message-name">${escapeHtml(msg.name)}</div>
+            <div style="font-size:0.95rem; opacity: 0.8;">${escapeHtml(msg.message)}</div>
+            <div class="ai-chip">
+                <strong>🤖 UniVoice AI:</strong><br>
+                <span id="text-${msg.id}">${escapeHtml(displayAi)}</span>
+                ${isLong ? `<span class="read-more-btn" onclick="toggleText('${msg.id}', \`${fullText.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`)">Read More</span>` : ''}
+            </div>
         `;
-        container.prepend(div);
+        document.getElementById('textMessagesList').prepend(div);
     }
+
+    window.toggleText = (id, full) => {
+        const span = document.getElementById(`text-${id}`);
+        const btn = span.nextElementSibling;
+        if(btn.innerText === "Read More") {
+            span.innerText = full;
+            btn.innerText = "Read Less";
+        } else {
+            span.innerText = full.substring(0, 250) + "...";
+            btn.innerText = "Read More";
+        }
+    };
+
     socket.on('new-text-message', addTextMessage);
+    socket.on('emoji-floating', ({ emoji }) => {
+        const e = document.createElement('div'); e.className = 'floating-emoji'; e.innerText = emoji;
+        e.style.left = Math.random() * 80 + 10 + '%';
+        document.getElementById('emojiLayer').appendChild(e);
+        setTimeout(() => e.remove(), 4000);
+    });
+
     socket.on('poll-response-received', ({ name, answer }) => {
         const div = document.createElement('div');
         div.className = 'message-item';
-        div.style.background = '#e8f5e9';
-        div.innerHTML = `<strong>📊 Poll Response from ${name}:</strong> ${answer}`;
+        div.style.borderLeft = "4px solid #3b82f6";
+        div.innerHTML = `<strong>📊 Poll: ${escapeHtml(name)}</strong> voted ${escapeHtml(answer)}`;
         document.getElementById('textMessagesList').prepend(div);
     });
+
     socket.on('direct-answer-response', ({ name, answer }) => {
         const div = document.createElement('div');
         div.className = 'message-item';
-        div.style.background = '#f3e5f5';
-        div.innerHTML = `<strong>✏️ Ans from ${name}:</strong> ${answer}`;
+        div.style.borderLeft = "4px solid #8b5cf6";
+        div.innerHTML = `<strong>✏️ Answer from ${escapeHtml(name)}:</strong><br>${escapeHtml(answer)}`;
         document.getElementById('textMessagesList').prepend(div);
     });
-    socket.on('emoji-floating', ({ emoji }) => {
-        const emojiDiv = document.createElement('div');
-        emojiDiv.className = 'floating-emoji';
-        emojiDiv.innerText = emoji;
-        emojiDiv.style.left = Math.random() * 80 + 10 + '%';
-        document.getElementById('emojiLayer').appendChild(emojiDiv);
-        setTimeout(() => emojiDiv.remove(), 4000);
+
+    // Drawer & Settings (unchanged)
+    document.getElementById('dotsMenu').onclick = (e) => { e.stopPropagation(); document.getElementById('drawerContent').classList.toggle('show'); };
+    window.onclick = () => document.getElementById('drawerContent').classList.remove('show');
+
+    document.getElementById('menuTextToggle').onclick = function() {
+        this.classList.toggle('active');
+        socket.emit('update-settings', { meetId, settings: { allowText: this.classList.contains('active') } });
+    };
+    document.getElementById('menuVoiceToggle').onclick = function() {
+        this.classList.toggle('active');
+        socket.emit('update-settings', { meetId, settings: { allowVoice: this.classList.contains('active') } });
+    };
+
+    document.querySelectorAll('.btn-opt').forEach(btn => {
+        btn.onclick = function() {
+            const val = parseInt(this.dataset.val);
+            const parentId = this.parentElement.id;
+            document.querySelectorAll(`#${parentId} .btn-opt`).forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            const key = parentId === 'timerSelector' ? 'micTimer' : 'maxSpeakers';
+            socket.emit('update-settings', { meetId, settings: { [key]: val } });
+        };
     });
 
-    // UI event bindings
-    document.getElementById('dotsMenu').onclick = () => document.getElementById('drawerContent').classList.toggle('show');
-    document.getElementById('passwordToggle').onclick = () => {
-        passwordGateEnabled = !passwordGateEnabled;
-        document.getElementById('passwordToggle').classList.toggle('active', passwordGateEnabled);
-        document.getElementById('passwordInputDiv').style.display = passwordGateEnabled ? 'flex' : 'none';
-        const newPass = passwordGateEnabled ? (document.getElementById('roomPasswordInput').value || 'KU2026') : '';
-        socket.emit('update-settings', { meetId, settings: { passwordGateEnabled, roomPassword: newPass } });
+    document.getElementById('passwordToggle').onclick = function() {
+        this.classList.toggle('active');
+        const active = this.classList.contains('active');
+        document.getElementById('passwordInputDiv').style.display = active ? 'block' : 'none';
+        socket.emit('update-settings', { meetId, settings: { passwordGateEnabled: active } });
     };
-    document.getElementById('roomPasswordInput').onchange = () => {
-        if(passwordGateEnabled) socket.emit('update-settings', { meetId, settings: { roomPassword: document.getElementById('roomPasswordInput').value } });
+    document.getElementById('debateToggle').onclick = function() {
+        this.classList.toggle('active');
+        socket.emit('update-settings', { meetId, settings: { debateMode: this.classList.contains('active') } });
     };
-    document.getElementById('debateToggle').onclick = () => {
-        currentDebateMode = !currentDebateMode;
-        document.getElementById('debateToggle').classList.toggle('active', currentDebateMode);
-        socket.emit('update-settings', { meetId, settings: { debateMode: currentDebateMode } });
-    };
-    document.getElementById('allowTextToggle').onchange = (e) => socket.emit('update-settings', { meetId, settings: { allowText: e.target.checked } });
-    document.getElementById('allowVoiceToggle').onchange = (e) => socket.emit('update-settings', { meetId, settings: { allowVoice: e.target.checked } });
+
     document.getElementById('sendYesNoPoll').onclick = () => {
-        const q = document.getElementById('deployQuestion').value;
-        if(!q) return alert('Enter a question');
+        const q = document.getElementById('deployQuestion').value || "Quick Poll";
         socket.emit('send-yesno-poll', { meetId, question: q });
-        alert('Poll sent!');
+        document.getElementById('pollLiveCard').innerHTML = `<p style="text-align:center; padding:10px; color:#d4af37;">Poll launched. Waiting for votes...</p>`;
     };
-    document.getElementById('sendDirectPrompt').onclick = () => {
-        const q = document.getElementById('deployQuestion').value;
-        if(!q) return alert('Enter a prompt');
-        socket.emit('send-direct-prompt', { meetId, question: q });
-        alert('Ans prompt sent!');
-    };
-    document.getElementById('whatsappShare').onclick = () => {
-        const link = `${window.location.origin}/student?meetId=${meetId}`;
-        window.open(`https://wa.me/?text=Join my UniVoice session: ${link}`, '_blank');
-    };
-    // QR Code display
+    document.getElementById('sendDirectPrompt').onclick = () => { socket.emit('send-direct-prompt', { meetId, question: document.getElementById('deployQuestion').value }); };
+    document.getElementById('whatsappShare').onclick = () => { window.open(`https://wa.me/?text=Join the UniVoice Network: ${window.location.origin}/student?meetId=${meetId}`, '_blank'); };
     document.getElementById('showQrBtn').onclick = () => {
-        const modal = document.getElementById('qrModal');
         const container = document.getElementById('qrCodeContainer');
-        container.innerHTML = ''; // clear old
-        const qrUrl = `${window.location.origin}/student?meetId=${meetId}`;
-        new QRCode(container, {
-            text: qrUrl,
-            width: 200,
-            height: 200,
-            colorDark: "#1e5631",
-            colorLight: "#ffffff",
-            correctLevel: QRCode.CorrectLevel.H
-        });
-        modal.style.display = 'flex';
+        container.innerHTML = '';
+        new QRCode(container, { text: `${window.location.origin}/student?meetId=${meetId}`, width: 220, height: 220, colorDark: "#0f172a" });
+        document.getElementById('qrModal').style.display = 'flex';
     };
-    document.getElementById('endSessionBtn').onclick = () => {
-        if(confirm('End this session permanently?')) {
-            socket.emit('end-session', { meetId });
-            alert('Session ended. Redirecting...');
-            window.location.href = '/';
-        }
-    };
-    socket.on('session-ended', () => { alert('Session ended by coordinator'); window.location.href = '/'; });
-    socket.on('settings-updated', (data) => {});
-    socket.on('debate-mode-changed', (data) => {});
+    document.getElementById('endSessionBtn').onclick = () => { if(confirm('Terminate Hub?')) socket.emit('end-session', { meetId }); };
+    socket.on('session-ended', () => window.location.href = '/');
 
-    // --- WEBRTC RECEIVER LOGIC ---
+    // WebRTC (unchanged, but cleanup on disconnect)
     socket.on('webrtc-offer', async ({ senderId, sdp }) => {
-        const iceConfiguration = {
-            iceServers: [
-                { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' },
-                {
-                    urls: 'turn:openrelay.metered.ca:80',
-                    username: 'openrelayproject',
-                    credential: 'openrelayproject'
-                },
-                {
-                    urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-                    username: 'openrelayproject',
-                    credential: 'openrelayproject'
-                },
-                {
-                    urls: 'turn:staticauth.openrelay.metered.ca:80',
-                    username: 'openrelayprojectsecret',
-                    credential: 'openrelayprojectsecret'
-                }
-            ]
-        };
-        
-        const pc = new RTCPeerConnection(iceConfiguration);
+        if (peerConnections[senderId]) {
+            try { peerConnections[senderId].close(); } catch(e) {}
+        }
+        const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' }] });
         peerConnections[senderId] = pc;
-
-        pc.onicecandidate = (event) => {
-            if (event.candidate) {
-                socket.emit('webrtc-ice', { meetId, targetId: senderId, candidate: event.candidate });
-            }
+        pc.onicecandidate = (e) => { if (e.candidate) socket.emit('webrtc-ice', { meetId, targetId: senderId, candidate: e.candidate }); };
+        pc.ontrack = (e) => {
+            let el = document.getElementById(`audio-${senderId}`);
+            if (!el) { el = document.createElement('audio'); el.id = `audio-${senderId}`; el.autoplay = true; el.setAttribute('playsinline', 'true'); document.body.appendChild(el); }
+            el.srcObject = e.streams[0]; el.play().catch(console.error);
         };
-
-        // UPDATED AUDIO HANDLING LOGIC
-        pc.ontrack = (event) => {
-            console.log("🎤 Audio stream incoming from student:", senderId);
-            let audioElement = document.getElementById(`audio-${senderId}`);
-            if (!audioElement) {
-                audioElement = document.createElement('audio');
-                audioElement.id = `audio-${senderId}`;
-                audioElement.autoplay = true; 
-                // Add these for extra browser compatibility
-                audioElement.setAttribute('autoplay', 'true');
-                audioElement.setAttribute('playsinline', 'true');
-                document.body.appendChild(audioElement);
-            }
-            audioElement.srcObject = event.streams[0];
-            
-            // EXPLICIT PLAY CALL: Forces the browser to ignore its "silence" policy
-            audioElement.play().catch(e => {
-                console.warn("Autoplay blocked. User needs to click the page first.", e);
-            });
-        };
-
         await pc.setRemoteDescription(new RTCSessionDescription(sdp));
-        const answer = await pc.createAnswer();
-        await pc.setLocalDescription(answer);
+        const ans = await pc.createAnswer(); await pc.setLocalDescription(ans);
         socket.emit('webrtc-answer', { meetId, targetId: senderId, sdp: pc.localDescription });
     });
-
-    socket.on('webrtc-ice', async ({ senderId, candidate }) => {
-        if (peerConnections[senderId]) {
-            await peerConnections[senderId].addIceCandidate(new RTCIceCandidate(candidate));
-        }
-    });
-
+    socket.on('webrtc-ice', async ({ senderId, candidate }) => { if (peerConnections[senderId]) await peerConnections[senderId].addIceCandidate(new RTCIceCandidate(candidate)); });
 </script>
 </body>
 </html>

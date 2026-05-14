@@ -3,107 +3,437 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>UniVoice | Gateway</title>
+    <title>UniVoice | Elite Smart Interaction</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/html5-qrcode/minified/html5-qrcode.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #f8fafc;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* --- Custom Highly Designed Brand Logo --- */
+        .brand-header {
+            margin-top: 8vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeInDown 0.8s ease-out;
+        }
+        .custom-logo-container {
+            position: relative;
+            width: 90px;
+            height: 90px;
+            margin-bottom: 15px;
+        }
+        .logo-shape-1 {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            transform: rotate(45deg);
+            box-shadow: 0 10px 25px rgba(34, 197, 94, 0.4);
+            animation: morph 8s ease-in-out infinite alternate;
+        }
+        .logo-shape-2 {
+            position: absolute;
+            top: 15%;
+            left: 15%;
+            width: 70%;
+            height: 70%;
+            background: linear-gradient(135deg, #eab308 0%, #d4af37 100%);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 40px 20px;
+            box-shadow: inset 0 2px 5px rgba(255,255,255,0.5);
         }
-        .golden-frame {
-            max-width: 1400px;
+        .logo-icon {
+            font-size: 2rem;
+            color: #0f172a;
+            transform: translateY(-2px);
+        }
+        .brand-title {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(to right, #ffffff, #94a3b8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0;
+        }
+
+        /* --- Center Action Screen --- */
+        .action-hub {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
             width: 100%;
-            background: white;
-            border: 4px solid #d4af37;
-            border-radius: 50px;
-            padding: 40px 50px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            max-width: 360px;
+            margin: auto 0;
+            animation: scaleUp 0.6s ease-out;
         }
-        .logo-section { text-align: center; margin-bottom: 40px; }
-        .ku-logo { width: 300px; height: auto; display: block; margin: 0 auto 20px; }
-        .logo-section h1 { font-size: 2.8rem; font-weight: 800; background: linear-gradient(135deg, #1e5631 0%, #2ecc71 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .split-container { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 20px; }
-        .card { background: #fff; border-radius: 30px; padding: 30px; border: 2px solid #e9ecef; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        .card:hover { transform: translateY(-5px); border-color: #d4af37; }
-        .card h2 { color: #1e5631; font-size: 1.8rem; margin-bottom: 5px; }
-        .input-group { margin-bottom: 20px; }
-        .input-group label { display: block; font-weight: 600; color: #495057; margin-bottom: 8px; }
-        .input-group input { width: 100%; padding: 14px 18px; border: 2px solid #e9ecef; border-radius: 16px; font-family: 'Poppins', sans-serif; font-size: 1rem; }
-        .btn-primary { width: 100%; background: linear-gradient(135deg, #1e5631 0%, #27ae60 100%); color: white; border: none; padding: 14px; border-radius: 16px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.3s; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(30,86,49,0.3); }
-        .btn-outline-gold { background: transparent; border: 2px solid #d4af37; color: #d4af37; width: 100%; padding: 12px; border-radius: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; }
-        .qr-scanner-area { margin-top: 20px; border-top: 1px solid #e9ecef; padding-top: 20px; }
-        #qr-reader { width: 100%; border-radius: 20px; overflow: hidden; margin-top: 10px; }
-        @media (max-width: 900px) { .split-container { grid-template-columns: 1fr; } .ku-logo { width: 200px; } }
+        .hub-btn {
+            width: 100%;
+            padding: 18px 24px;
+            border-radius: 24px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            outline: none;
+        }
+        .btn-create {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            box-shadow: 0 12px 30px rgba(22, 163, 74, 0.3);
+        }
+        .btn-create:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 16px 35px rgba(22, 163, 74, 0.4);
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+        }
+        .btn-join {
+            background: rgba(30, 41, 59, 0.7);
+            color: #e2e8f0;
+            border: 2px solid rgba(148, 163, 184, 0.2);
+            backdrop-filter: blur(12px);
+        }
+        .btn-join:hover {
+            transform: translateY(-3px) scale(1.02);
+            background: rgba(30, 41, 59, 0.9);
+            border-color: #d4af37;
+            color: white;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+        }
+
+        /* --- Tagline & Footer --- */
+        .brand-footer {
+            margin-bottom: 4vh;
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out;
+        }
+        .tagline {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #94a3b8;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        .powered-by {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #d4af37;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* --- Premium Glassmorphism Modals --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+        .modal-card {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 36px;
+            width: 100%;
+            max-width: 420px;
+            padding: 35px 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+        .modal-overlay.active .modal-card {
+            transform: translateY(0);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .modal-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+        .btn-close {
+            background: rgba(255,255,255,0.05);
+            border: none;
+            color: #94a3b8;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-close:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .input-group {
+            margin-bottom: 18px;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            border-radius: 18px;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            transition: 0.2s;
+            outline: none;
+        }
+        .input-group input:focus {
+            border-color: #22c55e;
+            background: rgba(15, 23, 42, 0.9);
+        }
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 18px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+        .btn-submit:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+        .btn-outline-gold {
+            background: transparent;
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            width: 100%;
+            padding: 12px;
+            border-radius: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: 0.2s;
+        }
+        .btn-outline-gold:hover {
+            background: rgba(212, 175, 55, 0.1);
+        }
+        .qr-scanner-area {
+            margin-top: 15px;
+        }
+        #qr-reader {
+            width: 100%;
+            border-radius: 18px;
+            overflow: hidden;
+            margin-top: 12px;
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+        .scanned-id { margin-top: 10px; font-size: 0.9rem; color: #22c55e; font-weight: 600; }
+
+        /* --- Animations --- */
+        @keyframes morph {
+            0% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+            50% { border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%; }
+            100% { border-radius: 50% 50% 50% 50% / 30% 30% 70% 70%; }
+        }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleUp { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
-    <div class="golden-frame">
-        <div class="logo-section">
-            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/12/University_of_Kashmir_logo.png/200px-University_of_Kashmir_logo.png" class="ku-logo" onerror="this.src='https://placehold.co/300x100/1e5631/white?text=KU'">
-            <h1>UniVoice</h1>
-            <p>Elite Smart Interaction Platform</p>
-        </div>
-        <div class="split-container">
-            <div class="card">
-                <h2>🎤 Create Meet</h2>
-                <p class="card-sub">Start a new session as Coordinator</p>
-                <form id="createMeetForm">
-                    <div class="input-group"><label>Coordinator Name</label><input type="text" id="coordName" placeholder="Prof. John Doe" required></div>
-                    <div class="input-group"><label>Session Topic</label><input type="text" id="sessionTopic" placeholder="e.g., Artificial Intelligence" required></div>
-                    <button type="submit" class="btn-primary">✨ Create Session →</button>
-                </form>
+
+    <header class="brand-header">
+        <div class="custom-logo-container">
+            <div class="logo-shape-1"></div>
+            <div class="logo-shape-2">
+                <span class="logo-icon">🎙️</span>
             </div>
-            <div class="card">
-                <h2>📱 Join Meet</h2>
-                <p class="card-sub">Enter Meet ID or scan QR Code</p>
-                <form id="joinMeetForm">
-                    <div class="input-group"><label>Meet ID</label><input type="text" id="meetIdInput" placeholder="e.g., A1B2C3" required></div>
-                    <div class="input-group"><label>Full Name</label><input type="text" id="studentName" placeholder="Your Name" required></div>
-                    <div class="input-group"><label>Department</label><input type="text" id="studentDept" placeholder="e.g., Computer Science" required></div>
-                    <div class="input-group"><label>Roll Number</label><input type="text" id="studentRoll" placeholder="2024-CS-01" required></div>
-                    <!-- Password field always visible (but optional) -->
-                    <div class="input-group"><label>Session Password (if required)</label><input type="password" id="sessionPassword" placeholder="Enter password"></div>
-                    <button type="submit" class="btn-primary">🚀 Join Session →</button>
-                </form>
-                <div class="qr-scanner-area">
-                    <button type="button" id="scanQrBtn" class="btn-outline-gold">📷 Scan QR Code</button>
-                    <div id="qr-reader" style="display:none;"></div>
-                    <div id="qr-result" class="scanned-id"></div>
+        </div>
+        <h1 class="brand-title">UniVoice</h1>
+    </header>
+
+    <main class="action-hub">
+        <button class="hub-btn btn-create" onclick="openModal('createModal')">
+            🚀 Create Meet
+        </button>
+        <button class="hub-btn btn-join" onclick="openModal('joinModal')">
+            🤝 Join Meet
+        </button>
+    </main>
+
+    <footer class="brand-footer">
+        <div class="tagline">Crafted for voice that matters</div>
+        <div class="powered-by">Powered by SRb</div>
+    </footer>
+
+    <div id="createModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>Create Session</h2>
+                <button class="btn-close" onclick="closeModal('createModal')">✕</button>
+            </div>
+            <form id="createMeetForm">
+                <div class="input-group">
+                    <label>Coordinator Name</label>
+                    <input type="text" id="coordName" placeholder="Prof. John Doe" required>
                 </div>
+                <div class="input-group">
+                    <label>Session Topic</label>
+                    <input type="text" id="sessionTopic" placeholder="e.g., Advanced Algorithms" required>
+                </div>
+                <button type="submit" class="btn-submit">Initialize Hub →</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="joinModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>Access Portal</h2>
+                <button class="btn-close" onclick="closeModal('joinModal')">✕</button>
+            </div>
+            <form id="joinMeetForm">
+                <div class="input-group">
+                    <label>Secure Meet ID</label>
+                    <input type="text" id="meetIdInput" placeholder="e.g., A1B2C3" required>
+                </div>
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" id="studentName" placeholder="Your Name" required>
+                </div>
+                <div class="input-group">
+                    <label>Department</label>
+                    <input type="text" id="studentDept" placeholder="e.g., Computer Science" required>
+                </div>
+                <div class="input-group">
+                    <label>Roll Number</label>
+                    <input type="text" id="studentRoll" placeholder="2026-CS-01" required>
+                </div>
+                <div class="input-group">
+                    <label>Room Key (Optional)</label>
+                    <input type="password" id="sessionPassword" placeholder="Enter password if required">
+                </div>
+                <button type="submit" class="btn-submit">Enter Gateway →</button>
+            </form>
+            <div class="qr-scanner-area">
+                <button type="button" id="scanQrBtn" class="btn-outline-gold">📷 Scan Network QR</button>
+                <div id="qr-reader" style="display:none;"></div>
+                <div id="qr-result" class="scanned-id"></div>
             </div>
         </div>
     </div>
+
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
+
+        // Modal Router Logic
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+            // Close QR scanner safely if open
+            if(html5QrCode) {
+                html5QrCode.stop().catch(e => {});
+                document.getElementById('qr-reader').style.display = 'none';
+                document.getElementById('scanQrBtn').textContent = '📷 Scan Network QR';
+            }
+        }
+
+        // --- DIRECT LINK / QR AUTO-DETECTION INTEGRATION ---
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const targetMeetId = urlParams.get('meetId');
+            if (targetMeetId) {
+                openModal('joinModal');
+                const meetInput = document.getElementById('meetIdInput');
+                if (meetInput) {
+                    meetInput.value = targetMeetId.toUpperCase();
+                    // Optionally set state visual confirmation indicator natively
+                }
+            }
+        });
+
+        // Form Executions (Unchanged Core Routing)
         document.getElementById('createMeetForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const coordinatorName = document.getElementById('coordName').value;
-            const sessionTopic = document.getElementById('sessionTopic').value;
-            if (!coordinatorName || !sessionTopic) return alert('Fill all fields');
+            const coordinatorName = document.getElementById('coordName').value.trim();
+            const sessionTopic = document.getElementById('sessionTopic').value.trim();
+            if (!coordinatorName || !sessionTopic) return;
+            
             socket.emit('create-room', { coordinatorName, sessionTopic });
             const btn = e.target.querySelector('button');
-            btn.disabled = true; btn.textContent = 'Creating...';
+            btn.disabled = true; 
+            btn.textContent = 'Allocating Network...';
         });
+
         socket.on('room-created', ({ meetId, sessionTopic }) => {
             window.location.href = `/coordinator?meetId=${meetId}&topic=${encodeURIComponent(sessionTopic)}`;
         });
+
         document.getElementById('joinMeetForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const meetId = document.getElementById('meetIdInput').value.toUpperCase();
-            const name = document.getElementById('studentName').value;
-            const dept = document.getElementById('studentDept').value;
-            const roll = document.getElementById('studentRoll').value;
+            const meetId = document.getElementById('meetIdInput').value.trim().toUpperCase();
+            const name = document.getElementById('studentName').value.trim();
+            const dept = document.getElementById('studentDept').value.trim();
+            const roll = document.getElementById('studentRoll').value.trim();
             const password = document.getElementById('sessionPassword').value;
-            if (!meetId || !name || !dept || !roll) return alert('All fields required');
+            
+            if (!meetId || !name || !dept || !roll) return;
+            
             sessionStorage.setItem('joinMeetId', meetId);
             sessionStorage.setItem('joinName', name);
             sessionStorage.setItem('joinDept', dept);
@@ -111,25 +441,35 @@
             sessionStorage.setItem('joinPassword', password);
             window.location.href = `/student?meetId=${meetId}`;
         });
+
+        // Interactive QR Execution
         let html5QrCode;
         const scanBtn = document.getElementById('scanQrBtn');
         const qrReader = document.getElementById('qr-reader');
+        
         scanBtn.onclick = () => {
             if (qrReader.style.display === 'none') {
                 qrReader.style.display = 'block';
-                scanBtn.textContent = '❌ Close Scanner';
+                scanBtn.textContent = '❌ Terminate Scanner';
                 html5QrCode = new Html5Qrcode("qr-reader");
-                html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, (decodedText) => {
-                    document.getElementById('meetIdInput').value = decodedText.toUpperCase();
-                    document.getElementById('qr-result').innerHTML = `✅ Scanned: ${decodedText}`;
-                    html5QrCode.stop();
-                    qrReader.style.display = 'none';
-                    scanBtn.textContent = '📷 Scan QR Code';
-                }, (error) => {});
+                html5QrCode.start(
+                    { facingMode: "environment" }, 
+                    { fps: 10, qrbox: 250 }, 
+                    (decodedText) => {
+                        document.getElementById('meetIdInput').value = decodedText.toUpperCase();
+                        document.getElementById('qr-result').innerHTML = `✅ Captured ID: ${decodedText}`;
+                        html5QrCode.stop();
+                        qrReader.style.display = 'none';
+                        scanBtn.textContent = '📷 Scan Network QR';
+                    }, 
+                    (error) => {}
+                ).catch(err => {
+                    alert('Camera setup failed. Check browser encryption state.');
+                });
             } else {
-                if (html5QrCode) html5QrCode.stop();
+                if (html5QrCode) html5QrCode.stop().catch(e=>{});
                 qrReader.style.display = 'none';
-                scanBtn.textContent = '📷 Scan QR Code';
+                scanBtn.textContent = '📷 Scan Network QR';
             }
         };
     </script>
