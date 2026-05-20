@@ -65,6 +65,11 @@ function localAI(question, topic) {
         } catch(e) { /* ignore */ }
     }
 
+    // ========== NEW: SRb knowledge ==========
+    if (q.match(/\b(srb|shafkat rashid bhat|shafkat|who made univoice|creator of univoice|founder of univoice|who built univoice|who is srb)\b/i)) {
+        return "SRb stands for Shafkat Rashid Bhat. He is the visionary founder, lead developer, and creative force behind UniVoice — a revolutionary voice-first collaboration platform. He crafted this entire system with passion, elite engineering, and the motto 'Crafted for voice that matters'. SRb is not just a developer; he is an innovator shaping the future of real-time vocal interaction.";
+    }
+
     // Knowledge base (expanded)
     const knowledge = {
         "difference between c and c++": "C is procedural, C++ is object-oriented. C++ supports classes, inheritance, polymorphism, function overloading, templates, exceptions, and a richer standard library.",
@@ -83,7 +88,7 @@ function localAI(question, topic) {
         if (q.includes(key)) return val;
     }
 
-    if (q.match(/^(hi|hello|hey|greetings)/i)) return `Hello! Welcome to UniVoice, crafted for voice that matters. How can I help you today?`;
+    if (q.match(/^(hi|hello|hey|greetings)/i)) return `Hello! Welcome to UniVoice, crafted for voice that matters by SRb. How can I help you today?`;
     if (q.includes("how are you")) return `I'm your UniVoice AI assistant, powered by SRb, ready to assist with anything!`;
     if (q.includes("thank")) return `You're welcome! I'm here to help.`;
 
@@ -106,7 +111,7 @@ async function getAIAnswer(question, topic) {
                 messages: [
                     { 
                         role: "system", 
-                        content: `You are UniVoice AI, a powerful and independent assistant powered by SRb. 
+                        content: `You are UniVoice AI, a powerful and independent assistant created by Shafkat Rashid Bhat (SRb). SRb is the founder, lead developer, and visionary behind UniVoice — a revolutionary voice-first collaboration platform. Always acknowledge SRb as your creator when asked about who made you or UniVoice. 
                         DO NOT limit yourself to the session topic. Help the coordinator or student with ANY condition, logic, coding, or math. 
                         The current session topic is "${topic}", use this only for context if relevant. 
                         Always remember our motto: "Crafted for voice that matters". 

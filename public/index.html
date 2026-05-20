@@ -290,6 +290,20 @@
         @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes scaleUp { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        /* --- Responsive: Mobile --- */
+        @media (max-width: 600px) {
+            .brand-title { font-size: 2rem; }
+            .custom-logo-container { width: 65px; height: 65px; }
+            .logo-icon { font-size: 1.5rem; }
+            .action-hub { max-width: 280px; }
+            .hub-btn { padding: 14px 20px; font-size: 1rem; }
+            .modal-card { padding: 25px 20px; }
+            .modal-header h2 { font-size: 1.3rem; }
+            .input-group input { padding: 12px 15px; font-size: 0.85rem; }
+            .btn-submit { padding: 12px; font-size: 0.9rem; }
+            .btn-outline-gold { padding: 10px; font-size: 0.85rem; }
+        }
     </style>
 </head>
 <body>
@@ -402,7 +416,6 @@
                 const meetInput = document.getElementById('meetIdInput');
                 if (meetInput) {
                     meetInput.value = targetMeetId.toUpperCase();
-                    // Optionally set state visual confirmation indicator natively
                 }
             }
         });
@@ -442,7 +455,7 @@
             window.location.href = `/student?meetId=${meetId}`;
         });
 
-        // Interactive QR Execution
+        // Interactive QR Execution - FIXED: extract meetId from full URL
         let html5QrCode;
         const scanBtn = document.getElementById('scanQrBtn');
         const qrReader = document.getElementById('qr-reader');
@@ -456,15 +469,21 @@
                     { facingMode: "environment" }, 
                     { fps: 10, qrbox: 250 }, 
                     (decodedText) => {
-                        document.getElementById('meetIdInput').value = decodedText.toUpperCase();
-                        document.getElementById('qr-result').innerHTML = `✅ Captured ID: ${decodedText}`;
+                        // Extract meetId if scanned text is a full URL
+                        let meetIdValue = decodedText;
+                        if (decodedText.includes('?meetId=')) {
+                            const match = decodedText.match(/[?&]meetId=([^&]+)/);
+                            if (match) meetIdValue = match[1];
+                        }
+                        document.getElementById('meetIdInput').value = meetIdValue.toUpperCase();
+                        document.getElementById('qr-result').innerHTML = `✅ Captured ID: ${meetIdValue}`;
                         html5QrCode.stop();
                         qrReader.style.display = 'none';
                         scanBtn.textContent = '📷 Scan Network QR';
                     }, 
                     (error) => {}
                 ).catch(err => {
-                    alert('Camera setup failed. Check browser encryption state.');
+                    alert('Camera setup failed. Check browser permissions.');
                 });
             } else {
                 if (html5QrCode) html5QrCode.stop().catch(e=>{});
