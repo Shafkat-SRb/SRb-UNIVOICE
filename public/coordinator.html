@@ -16,7 +16,6 @@
             padding: 20px;
             position: relative;
         }
-        /* Floating Hotstar-style Eye Counter */
         .floating-eye {
             position: fixed;
             top: 20px;
@@ -139,6 +138,79 @@
         .read-more-btn { color: #3b82f6; cursor: pointer; font-weight: 800; text-decoration: underline; margin-left: 8px; display: inline-block; }
         .emoji-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; overflow: hidden; }
         .floating-emoji { position: absolute; font-size: 3.5rem; animation: floatUp 4s ease-out forwards; bottom: 0; }
+
+        .captions-panel {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 25px;
+            padding: 15px;
+            margin-top: 20px;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+        .captions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .captions-title {
+            font-weight: 800;
+            color: #8b5cf6;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+        .auto-speak-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(139, 92, 246, 0.2);
+            padding: 5px 12px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .auto-speak-toggle.active {
+            background: #8b5cf6;
+            color: white;
+        }
+        .caption-item {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 18px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-left: 3px solid #8b5cf6;
+        }
+        .caption-original {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-bottom: 5px;
+        }
+        .caption-translated {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #f8fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .speak-caption-btn {
+            background: #8b5cf6;
+            border: none;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .speak-caption-btn:hover {
+            background: #6d28d9;
+        }
+
         @keyframes floatUp { 0% { bottom: 0; opacity: 1; transform: translateX(0); } 100% { bottom: 100%; opacity: 0; transform: translateX(60px); } }
         @keyframes morph { 0% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; } 100% { border-radius: 50% 50% 50% 50% / 30% 30% 70% 70%; } }
         @keyframes pulse-red { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
@@ -161,7 +233,6 @@
 </head>
 <body>
 
-    <!-- Floating Eye Counter (Hotstar style) -->
     <div class="floating-eye">
         <span class="eye-icon">👁️</span>
         <span class="eye-count" id="liveParticipantCount">0</span>
@@ -191,6 +262,8 @@
                 <div class="drawer-section-title">Interaction Toggles</div>
                 <div class="drawer-item"><span>💬 Enable Text Portal</span><div id="menuTextToggle" class="toggle-switch active"><span></span></div></div>
                 <div class="drawer-item"><span>🎤 Enable Vocal Portal</span><div id="menuVoiceToggle" class="toggle-switch active"><span></span></div></div>
+                <!-- NEW: Emoji Reactions Toggle -->
+                <div class="drawer-item"><span>😀 Enable Emoji Reactions</span><div id="menuEmojiToggle" class="toggle-switch active"><span></span></div></div>
 
                 <div class="drawer-section-title">Security & Access</div>
                 <div class="drawer-item"><span>🔐 Password Gate</span><div id="passwordToggle" class="toggle-switch"><span></span></div></div>
@@ -244,7 +317,17 @@
             <div class="column">
                 <div class="col-header">💡 Intelligence Feed</div>
                 <div id="pollLiveCard"></div>
-                <div id="textMessagesList" style="max-height:600px; overflow-y:auto; padding-right:10px;"></div>
+                <div id="textMessagesList" style="max-height:400px; overflow-y:auto; padding-right:10px;"></div>
+
+                <div class="captions-panel" id="captionsPanel">
+                    <div class="captions-header">
+                        <span class="captions-title">🎙️ LIVE TRANSLATION CAPTIONS (→ English)</span>
+                        <div id="autoSpeakToggle" class="auto-speak-toggle">🔊 Auto-Speak OFF</div>
+                    </div>
+                    <div id="captionsList" style="max-height:300px; overflow-y:auto;">
+                        <p style="color:#64748b; font-size:0.8rem; text-align:center;">No translations yet. Student must start translation mode.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -274,6 +357,12 @@
         socket.on('coordinator-joined', (data) => {
             document.getElementById('menuTextToggle').classList.toggle('active', data.allowText);
             document.getElementById('menuVoiceToggle').classList.toggle('active', data.allowVoice);
+            // NEW: set emoji toggle state
+            if (data.allowEmoji !== undefined) {
+                document.getElementById('menuEmojiToggle').classList.toggle('active', data.allowEmoji);
+            } else {
+                document.getElementById('menuEmojiToggle').classList.add('active'); // default on
+            }
             document.getElementById('debateToggle').classList.toggle('active', data.debateMode);
             document.getElementById('passwordToggle').classList.toggle('active', data.passwordGateEnabled);
             syncSelector('timerSelector', data.micTimer);
@@ -288,6 +377,69 @@
         socket.on('update-participant-count', (data) => {
             document.getElementById('liveParticipantCount').innerText = data.count;
         });
+
+        // ========== Translation Captions Handler ==========
+        let autoSpeakEnabled = false;
+        const autoSpeakToggle = document.getElementById('autoSpeakToggle');
+        const captionsList = document.getElementById('captionsList');
+
+        function muteAllWebRTCAudio(mute) {
+            const allAudio = document.querySelectorAll('audio');
+            allAudio.forEach(audio => {
+                if (audio.id && audio.id.startsWith('audio-')) {
+                    audio.muted = mute;
+                }
+            });
+        }
+
+        autoSpeakToggle.addEventListener('click', () => {
+            autoSpeakEnabled = !autoSpeakEnabled;
+            if (autoSpeakEnabled) {
+                autoSpeakToggle.classList.add('active');
+                autoSpeakToggle.innerHTML = '🔊 Auto-Speak ON';
+                muteAllWebRTCAudio(true);
+            } else {
+                autoSpeakToggle.classList.remove('active');
+                autoSpeakToggle.innerHTML = '🔊 Auto-Speak OFF';
+                muteAllWebRTCAudio(false);
+            }
+        });
+
+        function speakText(text) {
+            if (!window.speechSynthesis) return;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(utterance);
+        }
+
+        socket.on('translated-caption', (data) => {
+            const { studentName, original, translated, timestamp } = data;
+            const captionDiv = document.createElement('div');
+            captionDiv.className = 'caption-item';
+            captionDiv.innerHTML = `
+                <div class="caption-original">
+                    🗣️ ${escapeHtml(studentName)} (original): ${escapeHtml(original)}
+                </div>
+                <div class="caption-translated">
+                    <span>🔊 English: ${escapeHtml(translated)}</span>
+                    <button class="speak-caption-btn" data-text="${escapeHtml(translated.replace(/"/g, '&quot;'))}">🔊 Speak</button>
+                </div>
+            `;
+            captionsList.prepend(captionDiv);
+            const speakBtn = captionDiv.querySelector('.speak-caption-btn');
+            speakBtn.addEventListener('click', () => { speakText(translated); });
+            if (autoSpeakEnabled) speakText(translated);
+            while (captionsList.children.length > 20) captionsList.removeChild(captionsList.lastChild);
+        });
+
+        // ========== Emoji Toggle ==========
+        const emojiToggle = document.getElementById('menuEmojiToggle');
+        emojiToggle.onclick = function() {
+            this.classList.toggle('active');
+            socket.emit('update-settings', { meetId, settings: { allowEmoji: this.classList.contains('active') } });
+        };
+        // ========== End Emoji Toggle ==========
 
         function syncSelector(id, val) {
             document.querySelectorAll(`#${id} .btn-opt`).forEach(b => {
@@ -364,7 +516,6 @@
             `;
         });
 
-        // FIXED: Read More with event listener (no inline onclick issues)
         function addTextMessage(msg) {
             const div = document.createElement('div');
             div.className = 'message-item';
@@ -424,7 +575,6 @@
             document.getElementById('textMessagesList').prepend(div);
         });
 
-        // FIXED: Drawer menu – only close when clicking outside or on dots, not on internal elements
         const drawer = document.getElementById('drawerContent');
         const dots = document.getElementById('dotsMenu');
         dots.onclick = (e) => { e.stopPropagation(); drawer.classList.toggle('show'); };
@@ -435,7 +585,6 @@
             }
         });
 
-        // Settings toggles (unchanged)
         document.getElementById('menuTextToggle').onclick = function() {
             this.classList.toggle('active');
             socket.emit('update-settings', { meetId, settings: { allowText: this.classList.contains('active') } });
@@ -480,7 +629,6 @@
         document.getElementById('endSessionBtn').onclick = () => { if(confirm('Terminate Hub?')) socket.emit('end-session', { meetId }); };
         socket.on('session-ended', () => window.location.href = '/');
 
-        // WebRTC (unchanged)
         socket.on('webrtc-offer', async ({ senderId, sdp }) => {
             if (peerConnections[senderId]) { try { peerConnections[senderId].close(); } catch(e) {} }
             const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' }] });
@@ -489,7 +637,9 @@
             pc.ontrack = (e) => {
                 let el = document.getElementById(`audio-${senderId}`);
                 if (!el) { el = document.createElement('audio'); el.id = `audio-${senderId}`; el.autoplay = true; el.setAttribute('playsinline', 'true'); document.body.appendChild(el); }
-                el.srcObject = e.streams[0]; el.play().catch(console.error);
+                el.srcObject = e.streams[0];
+                if (autoSpeakEnabled) el.muted = true;
+                el.play().catch(console.error);
             };
             await pc.setRemoteDescription(new RTCSessionDescription(sdp));
             const ans = await pc.createAnswer(); await pc.setLocalDescription(ans);

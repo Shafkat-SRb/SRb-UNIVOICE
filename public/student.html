@@ -143,6 +143,57 @@
         }
         .emoji-btn:hover { background: rgba(255,255,255,0.1); transform: scale(1.05); }
 
+        /* --- Translation UI (simplified, always to English) --- */
+        .translation-panel {
+            margin: 20px 0 10px;
+            padding: 15px;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 25px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        .lang-selector {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .lang-selector select {
+            background: #0f172a;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            border: 1px solid #334155;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            flex: 1;
+        }
+        .btn-translate-toggle {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: none;
+            color: white;
+            transition: 0.2s;
+        }
+        .btn-translate-toggle.active {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        .translation-status {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            text-align: center;
+            margin-top: 8px;
+        }
+        .translation-status.active {
+            color: #22c55e;
+        }
+
         .message-area { display: flex; gap: 12px; margin-top: 15px; flex-wrap: wrap; }
         .message-area input { 
             flex: 1; padding: 14px 20px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); 
@@ -195,12 +246,13 @@
             .poll-option { padding: 12px; font-size: 0.9rem; }
             .floating-eye { top: 10px; right: 10px; padding: 5px 10px; }
             .eye-count { font-size: 0.8rem; padding: 1px 6px; }
+            .lang-selector { flex-direction: row; flex-wrap: wrap; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Floating Eye Counter (Hotstar style) -->
+    <!-- Floating Eye Counter -->
     <div class="floating-eye">
         <span class="eye-icon">👁️</span>
         <span class="eye-count" id="pCount">0</span>
@@ -223,12 +275,27 @@
 
         <button id="requestSpeakBtn" class="btn-request">🎙️ Request to Speak</button>
 
-        <div class="emoji-picker">
+        <!-- Translation Panel -->
+        <div class="translation-panel">
+            <div class="lang-selector">
+                <select id="sourceLang">
+                    <option value="auto">Auto Detect (Urdu/Hindi/English)</option>
+                    <option value="ur">Urdu</option>
+                    <option value="hi">Hindi</option>
+                    <option value="en">English</option>
+                </select>
+                <span style="font-size:0.8rem;">→ English</span>
+                <button id="toggleTranslationBtn" class="btn-translate-toggle">🎤 Start Translation</button>
+            </div>
+            <div id="translationStatus" class="translation-status">⚪ Translation idle</div>
+        </div>
+
+        <!-- Emoji Picker (visibility controlled by coordinator) -->
+        <div class="emoji-picker" id="emojiPicker">
             <span class="emoji-btn" onclick="sendEmoji('❤️')">❤️</span>
             <span class="emoji-btn" onclick="sendEmoji('👍')">👍</span>
-            <span class="emoji-btn" onclick="sendEmoji('😂')">😂</span>
-            <span class="emoji-btn" onclick="sendEmoji('🎉')">🎉</span>
-            <span class="emoji-btn" onclick="sendEmoji('🤔')">🤔</span>
+            <span class="emoji-btn" onclick="sendEmoji('👏')">👏</span>
+            <span class="emoji-btn" onclick="sendEmoji('👎')">👎</span>
         </div>
 
         <div class="message-area">
@@ -272,6 +339,8 @@
         const password = sessionStorage.getItem('joinPassword') || '';
         const socket = io();
         let allowTextGlobal = true, allowVoiceGlobal = true;
+        let isActiveSpeaker = false;
+        let allowEmojiGlobal = true;   // NEW: track emoji permission
         
         socket.emit('join-room', { meetId, name, dept, roll, password });
         
@@ -303,6 +372,7 @@
         });
 
         socket.on('speaker-allowed', async ({ duration }) => {
+            isActiveSpeaker = true;
             document.getElementById('speakerStatus').innerHTML = `<div style="color:#22c55e; font-weight:700;">● LIVE TRANSMISSION</div><div id="speakerTimer" class="timer-display">Ready</div>`;
             startTimer(duration);
 
@@ -356,12 +426,23 @@
         socket.on('time-warning', () => { if (navigator.vibrate) navigator.vibrate([300, 100, 300]); });
 
         socket.on('speaker-revoked', () => {
+            isActiveSpeaker = false;
+            
             if (currentSpeakerTimer) clearInterval(currentSpeakerTimer);
             document.getElementById('speakerStatus').innerHTML = `<div style="opacity:0.6;">🎤 Speaking Status</div><div id="speakerTimer" class="timer-display">Offline</div>`;
             reqBtn.disabled = !allowVoiceGlobal;
             reqBtn.innerText = '🎙️ Request to Speak';
             if (localStream) { localStream.getTracks().forEach(track => track.stop()); localStream = null; }
             if (peerConnection) { peerConnection.close(); peerConnection = null; }
+            
+            // Stop translation when permission is revoked
+            if (recognition) {
+                recognition.stop();
+                recognition = null;
+            }
+            if (translationActive) {
+                updateTranslationUI(false);
+            }
         });
 
         socket.on('webrtc-answer', async ({ sdp }) => { if (peerConnection) await peerConnection.setRemoteDescription(new RTCSessionDescription(sdp)); });
@@ -382,10 +463,8 @@
             document.getElementById('pollQuestion').innerText = question;
             const optsDiv = document.getElementById('pollOptions');
             const barsDiv = document.getElementById('pollResultsBars');
-            
             optsDiv.style.display = 'block';
             barsDiv.style.display = 'none';
-            
             optsDiv.innerHTML = options.map(opt => `<button class="poll-option" onclick="submitVote('${opt}')">${opt}</button>`).join('');
             document.getElementById('pollModal').style.display = 'flex';
         });
@@ -401,7 +480,6 @@
             if(!hasVoted) return;
             const yesPerc = total > 0 ? (yes / total) * 100 : 0;
             const noPerc = total > 0 ? (no / total) * 100 : 0;
-
             document.getElementById('pollResultsBars').innerHTML = `
                 <div class="poll-bar-row">
                     <div class="poll-info"><span>YES</span><span>${Math.round(yesPerc)}%</span></div>
@@ -431,10 +509,145 @@
 
         socket.on('session-ended', () => { window.location.href = '/'; });
         
+        // ========== UPDATED: settings-updated handler now also manages emoji visibility ==========
         socket.on('settings-updated', (data) => {
             allowTextGlobal = data.allowText; allowVoiceGlobal = data.allowVoice;
             document.getElementById('textInput').disabled = !allowTextGlobal;
             reqBtn.disabled = !allowVoiceGlobal;
+            
+            // Handle emoji permission
+            if (data.allowEmoji !== undefined) {
+                allowEmojiGlobal = data.allowEmoji;
+                const emojiPickerDiv = document.getElementById('emojiPicker');
+                if (emojiPickerDiv) {
+                    emojiPickerDiv.style.display = allowEmojiGlobal ? 'flex' : 'none';
+                }
+            }
+        });
+        // ========== end settings-updated ==========
+
+        // ========== Translation Feature ==========
+        let translationActive = false;
+        let recognition = null;
+        const sourceLangSelect = document.getElementById('sourceLang');
+        const toggleBtn = document.getElementById('toggleTranslationBtn');
+        const translationStatusDiv = document.getElementById('translationStatus');
+
+        function detectLanguage(text) {
+            const lower = text.toLowerCase();
+            const englishWords = ['the', 'and', 'is', 'to', 'of', 'a', 'in', 'for', 'on', 'with', 'this', 'that', 'it', 'as', 'be', 'by', 'are', 'from', 'or', 'at', 'an'];
+            const urduWords = ['hai', 'hoon', 'aap', 'main', 'mein', 'woh', 'yeh', 'aur', 'kya', 'kyu', 'acha', 'nahi', 'hain', 'tha', 'the', 'kar', 'raha', 'rahi', 'sakta', 'sakti', 'apna', 'tum', 'hum'];
+            const hindiWords = ['main', 'tu', 'tum', 'woh', 'yeh', 'aur', 'kya', 'hai', 'hoon', 'nahi', 'hain', 'tha', 'the', 'kar', 'raha', 'rahi', 'sakta', 'sakti', 'apna', 'hum', 'aap'];
+            let scoreEn = 0, scoreUr = 0, scoreHi = 0;
+            englishWords.forEach(w => { if (lower.includes(w)) scoreEn++; });
+            urduWords.forEach(w => { if (lower.includes(w)) scoreUr++; });
+            hindiWords.forEach(w => { if (lower.includes(w)) scoreHi++; });
+            if (scoreEn > scoreUr && scoreEn > scoreHi) return 'en';
+            if (scoreUr > scoreHi) return 'ur';
+            if (scoreHi > scoreUr) return 'hi';
+            return 'en';
+        }
+
+        function updateTranslationUI(isActive) {
+            translationActive = isActive;
+            if (isActive) {
+                toggleBtn.classList.add('active');
+                toggleBtn.innerHTML = '🔴 Stop Translation';
+                translationStatusDiv.innerHTML = '🎙️ Listening... (speak naturally)';
+                translationStatusDiv.classList.add('active');
+            } else {
+                toggleBtn.classList.remove('active');
+                toggleBtn.innerHTML = '🎤 Start Translation';
+                translationStatusDiv.innerHTML = '⚪ Translation idle';
+                translationStatusDiv.classList.remove('active');
+            }
+        }
+
+        function initSpeechRecognition() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert('Your browser does not support speech recognition. Please use Chrome, Edge, or Safari.');
+                return false;
+            }
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = false;
+            const selected = sourceLangSelect.value;
+            if (selected === 'auto') recognition.lang = 'ur-PK';
+            else if (selected === 'ur') recognition.lang = 'ur-PK';
+            else if (selected === 'hi') recognition.lang = 'hi-IN';
+            else recognition.lang = 'en-US';
+            
+            recognition.onresult = (event) => {
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) {
+                        let transcript = event.results[i][0].transcript.trim();
+                        if (transcript.length === 0) return;
+                        let detectedLang = sourceLangSelect.value;
+                        if (detectedLang === 'auto') {
+                            detectedLang = detectLanguage(transcript);
+                            translationStatusDiv.innerHTML = `🎤 (${detectedLang.toUpperCase()}) "${transcript.substring(0, 40)}..." → translating to English...`;
+                        } else {
+                            translationStatusDiv.innerHTML = `🎤 Captured: "${transcript.substring(0, 40)}..." → translating to English...`;
+                        }
+                        socket.emit('voice-transcript', { meetId, text: transcript, studentName: name });
+                    }
+                }
+            };
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                translationStatusDiv.innerHTML = `⚠️ Error: ${event.error}. Please check microphone or speak clearly.`;
+            };
+            recognition.onend = () => {
+                if (translationActive) {
+                    setTimeout(() => {
+                        if (translationActive && recognition) {
+                            try { recognition.start(); } catch(e) { console.log("Restart failed", e); }
+                        }
+                    }, 300);
+                }
+            };
+            return true;
+        }
+
+        toggleBtn.onclick = () => {
+            if (!allowVoiceGlobal) {
+                alert('Voice portal is disabled by the coordinator.');
+                return;
+            }
+            if (!isActiveSpeaker) {
+                alert('You are not currently allowed to speak. Request and receive permission from the coordinator first.');
+                return;
+            }
+            if (translationActive) {
+                if (recognition) {
+                    recognition.stop();
+                    recognition = null;
+                }
+                updateTranslationUI(false);
+            } else {
+                if (!recognition) {
+                    if (!initSpeechRecognition()) return;
+                }
+                const selected = sourceLangSelect.value;
+                if (selected === 'auto') recognition.lang = 'ur-PK';
+                else if (selected === 'ur') recognition.lang = 'ur-PK';
+                else if (selected === 'hi') recognition.lang = 'hi-IN';
+                else recognition.lang = 'en-US';
+                recognition.start();
+                updateTranslationUI(true);
+            }
+        };
+
+        sourceLangSelect.addEventListener('change', () => {
+            if (translationActive && recognition) {
+                const selected = sourceLangSelect.value;
+                if (selected === 'auto') recognition.lang = 'ur-PK';
+                else if (selected === 'ur') recognition.lang = 'ur-PK';
+                else if (selected === 'hi') recognition.lang = 'hi-IN';
+                else recognition.lang = 'en-US';
+                translationStatusDiv.innerHTML = `🎤 Language preset changed to ${sourceLangSelect.options[sourceLangSelect.selectedIndex].text}`;
+            }
         });
     </script>
 </body>

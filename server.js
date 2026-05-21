@@ -34,14 +34,12 @@ function extractMathExpression(question) {
             expr = expr.replace(/[^0-9+\-*/().]/g, '');
             if (expr && expr.length > 0) {
                 try {
-                    // Test evaluation without crashing
                     const test = eval(expr);
                     if (typeof test === 'number' && !isNaN(test)) return expr;
                 } catch(e) { /* ignore invalid math */ }
             }
         }
     }
-    // If the whole question is a simple math expression
     if (/^[0-9+\-*/().\s]+$/.test(question)) {
         try {
             const test = eval(question);
@@ -56,7 +54,6 @@ function localAI(question, topic) {
     const q = (question || "").trim().toLowerCase();
     const safeTopic = topic && topic.trim() ? topic : "this session";
 
-    // Math
     const mathExpr = extractMathExpression(question);
     if (mathExpr) {
         try {
@@ -65,12 +62,11 @@ function localAI(question, topic) {
         } catch(e) { /* ignore */ }
     }
 
-    // ========== NEW: SRb knowledge ==========
+    // SRb knowledge
     if (q.match(/\b(srb|shafkat rashid bhat|shafkat|who made univoice|creator of univoice|founder of univoice|who built univoice|who is srb)\b/i)) {
         return "SRb stands for Shafkat Rashid Bhat. He is the visionary founder, lead developer, and creative force behind UniVoice — a revolutionary voice-first collaboration platform. He crafted this entire system with passion, elite engineering, and the motto 'Crafted for voice that matters'. SRb is not just a developer; he is an innovator shaping the future of real-time vocal interaction.";
     }
 
-    // Knowledge base (expanded)
     const knowledge = {
         "difference between c and c++": "C is procedural, C++ is object-oriented. C++ supports classes, inheritance, polymorphism, function overloading, templates, exceptions, and a richer standard library.",
         "difference between c and c++ programming languages": "C is procedural, C++ is object-oriented. C++ supports classes, inheritance, polymorphism, function overloading, templates, exceptions, and a richer standard library.",
@@ -104,7 +100,6 @@ function localAI(question, topic) {
 async function getAIAnswer(question, topic) {
     if (groqEnabled && groq) {
         try {
-            // Add a short timeout to avoid hanging
             const controller = new AbortController();
             const timeout = setTimeout(() => controller.abort(), 10000);
             const chatCompletion = await groq.chat.completions.create({
@@ -121,7 +116,7 @@ async function getAIAnswer(question, topic) {
                 ],
                 model: "llama-3.3-70b-versatile",
                 temperature: 0.7,
-                max_tokens: 1500 // Increased tokens for longer AI answers (handled by 'read more' on client)
+                max_tokens: 1500
             }, { signal: controller.signal });
             clearTimeout(timeout);
             return chatCompletion.choices[0]?.message?.content || localAI(question, topic);
@@ -131,6 +126,29 @@ async function getAIAnswer(question, topic) {
         }
     } else {
         return localAI(question, topic);
+    }
+}
+
+// ---------- Universal translation to English ----------
+async function translateToEnglish(text) {
+    if (!groqEnabled || !groq) {
+        return `[Translation unavailable] ${text}`;
+    }
+    try {
+        const prompt = `The following text may be in Urdu, Hindi, English, or a mix of these languages. 
+Translate it to natural, fluent English. Output ONLY the English translation, no extra text, no explanations.
+Text: "${text}"
+English translation:`;
+        const completion = await groq.chat.completions.create({
+            messages: [{ role: "user", content: prompt }],
+            model: "llama-3.3-70b-versatile",
+            temperature: 0.3,
+            max_tokens: 500
+        });
+        return completion.choices[0]?.message?.content || text;
+    } catch (error) {
+        console.error("Translation error:", error.message);
+        return `[Translation error] ${text}`;
     }
 }
 
@@ -160,10 +178,12 @@ io.on('connection', (socket) => {
             meetId, topic: sessionTopic, coordinatorName, coordinatorId: null,
             isActive: true, passwordEnabled: false, password: '',
             allowText: true, allowVoice: true, debateMode: false, 
-            micTimer: 60, // Default 1 min
-            maxSpeakers: 1, // Default 1 speaker
+            micTimer: 60,
+            maxSpeakers: 1,
+            // NEW: emoji reactions enabled by default
+            allowEmoji: true,
             students: new Map(), handRaiseQueue: [], activeSpeakers: [], textMessages: [],
-            pollVotes: { yes: 0, no: 0, voters: new Set() } // Added for WhatsApp-style tracking
+            pollVotes: { yes: 0, no: 0, voters: new Set() }
         };
         activeRooms.set(meetId, room);
         socket.emit('room-created', { meetId, sessionTopic });
@@ -185,12 +205,13 @@ io.on('connection', (socket) => {
             micTimer: room.micTimer,
             passwordGateEnabled: room.passwordEnabled,
             debateMode: room.debateMode,
+            // NEW: send emoji permission state
+            allowEmoji: room.allowEmoji,
             handRaiseQueue: room.handRaiseQueue,
             activeSpeakers: room.activeSpeakers.map(s => ({ socketId: s.socketId, name: s.name, dept: s.dept })),
             textMessages: room.textMessages.slice(-50)
         });
         console.log(`🎮 Coordinator joined SRb Hub: ${meetId}`);
-        // Broadcast participant count to everyone in Hub
         io.to(meetId).emit('update-participant-count', { count: room.students.size });
     });
 
@@ -212,7 +233,6 @@ io.on('connection', (socket) => {
             allowText: room.allowText,
             allowVoice: room.allowVoice
         });
-        // Update live count for all users
         io.to(meetId).emit('update-participant-count', { count: room.students.size });
     });
 
@@ -221,10 +241,9 @@ io.on('connection', (socket) => {
         if (!room || !room.allowVoice) return;
         if (room.handRaiseQueue.some(s => s.socketId === socket.id) || room.activeSpeakers.some(s => s.socketId === socket.id)) return;
         
-        // Push full state object cleanly
         room.handRaiseQueue.push({ socketId: socket.id, name, dept, roll });
         io.to(meetId).emit('update-hand-raise-queue', room.handRaiseQueue);
-        console.log(`✋ Hand-raise logged cleanly for ${name} inside Hub ID: ${meetId}`);
+        console.log(`✋ Hand-raise logged for ${name} inside Hub ID: ${meetId}`);
     });
 
     socket.on('allow-speaker', ({ meetId, studentSocketId }) => {
@@ -241,17 +260,15 @@ io.on('connection', (socket) => {
 
         room.handRaiseQueue.splice(index, 1);
         const startTime = Date.now();
-        const duration = room.micTimer; // Dynamic from settings
+        const duration = room.micTimer;
 
         const timerInterval = setInterval(() => {
-            if (duration === 0) { // Infinite mode
+            if (duration === 0) {
                 io.to(meetId).emit('speaker-timer-update', { socketId: studentSocketId, remaining: -1 });
                 return;
             }
-
             const elapsed = (Date.now() - startTime) / 1000;
             const remaining = Math.max(0, duration - elapsed);
-            
             if (remaining <= 0) {
                 clearInterval(timerInterval);
                 const spIndex = room.activeSpeakers.findIndex(s => s.socketId === studentSocketId);
@@ -279,10 +296,9 @@ io.on('connection', (socket) => {
         if (!room) return;
         const index = room.handRaiseQueue.findIndex(s => s.socketId === studentSocketId);
         if (index === -1) return;
-        const student = room.handRaiseQueue[index];
         room.handRaiseQueue.splice(index, 1);
         io.to(meetId).emit('update-hand-raise-queue', room.handRaiseQueue);
-        io.to(studentSocketId).emit('speaker-rejected', { name: student.name });
+        io.to(studentSocketId).emit('speaker-rejected');
     });
 
     socket.on('remove-speaker', ({ meetId, studentSocketId }) => {
@@ -306,6 +322,23 @@ io.on('connection', (socket) => {
         io.to(meetId).emit('new-text-message', msg);
     });
 
+    // Voice translation handler (unchanged)
+    socket.on('voice-transcript', async ({ meetId, text, studentName }) => {
+        const room = activeRooms.get(meetId);
+        if (!room || !room.isActive) return;
+        
+        const translated = await translateToEnglish(text);
+        const coordinatorSocketId = room.coordinatorId;
+        if (coordinatorSocketId) {
+            io.to(coordinatorSocketId).emit('translated-caption', {
+                studentName,
+                original: text,
+                translated: translated,
+                timestamp: Date.now()
+            });
+        }
+    });
+
     socket.on('update-settings', ({ meetId, settings }) => {
         const room = activeRooms.get(meetId);
         if (!room) return;
@@ -316,6 +349,8 @@ io.on('connection', (socket) => {
         if (settings.maxSpeakers !== undefined) room.maxSpeakers = settings.maxSpeakers;
         if (settings.passwordGateEnabled !== undefined) room.passwordEnabled = settings.passwordGateEnabled;
         if (settings.roomPassword !== undefined) room.password = settings.roomPassword;
+        // NEW: handle emoji toggle
+        if (settings.allowEmoji !== undefined) room.allowEmoji = settings.allowEmoji;
         
         if (settings.debateMode !== undefined) {
             room.debateMode = settings.debateMode;
@@ -327,14 +362,16 @@ io.on('connection', (socket) => {
             allowVoice: room.allowVoice, 
             micTimer: room.micTimer,
             maxSpeakers: room.maxSpeakers,
-            passwordGateEnabled: room.passwordEnabled 
+            passwordGateEnabled: room.passwordEnabled,
+            // NEW: send emoji permission state to all clients
+            allowEmoji: room.allowEmoji
         });
     });
 
     socket.on('send-yesno-poll', ({ meetId, question }) => {
         const room = activeRooms.get(meetId);
         if (room) {
-            room.pollVotes = { yes: 0, no: 0, voters: new Set() }; // Reset for new poll
+            room.pollVotes = { yes: 0, no: 0, voters: new Set() };
             io.to(meetId).emit('poll-received', { type: 'yesno', question, options: ['Yes', 'No'] });
         }
     });
@@ -351,14 +388,12 @@ io.on('connection', (socket) => {
         if (answer.toLowerCase() === 'yes') room.pollVotes.yes++;
         else if (answer.toLowerCase() === 'no') room.pollVotes.no++;
 
-        // Broadcast WhatsApp style real-time update
         io.to(meetId).emit('poll-update-results', {
             yes: room.pollVotes.yes,
             no: room.pollVotes.no,
             total: room.pollVotes.voters.size
         });
 
-        // Still send the notification to the coordinator intelligence feed
         if (room.coordinatorId) {
             io.to(room.coordinatorId).emit('poll-response-received', { name, answer });
         }
@@ -371,7 +406,10 @@ io.on('connection', (socket) => {
         }
     });
 
+    // UPDATED: send-emoji now checks if emoji reactions are allowed
     socket.on('send-emoji', ({ meetId, emoji }) => {
+        const room = activeRooms.get(meetId);
+        if (!room || !room.allowEmoji) return; // Ignore if disabled by coordinator
         io.to(meetId).emit('emoji-floating', { emoji });
     });
 
@@ -412,10 +450,8 @@ io.on('connection', (socket) => {
         for (const [meetId, room] of activeRooms.entries()) {
             if (room.students.has(socket.id)) {
                 room.students.delete(socket.id);
-                // Broadcast updated count on exit
                 io.to(meetId).emit('update-participant-count', { count: room.students.size });
             }
-
             room.handRaiseQueue = room.handRaiseQueue.filter(s => s.socketId !== socket.id);
             io.to(meetId).emit('update-hand-raise-queue', room.handRaiseQueue);
             const speaker = room.activeSpeakers.find(s => s.socketId === socket.id);
